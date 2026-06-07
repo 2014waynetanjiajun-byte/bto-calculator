@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Singapore BTO Calculator 2026</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#1a202c;line-height:1.6;font-size:15px}
+    a{color:#2563eb}
+
+    /* Header */
+    header{background:linear-gradient(135deg,#0f2d52 0%,#1d4ed8 100%);color:white;padding:28px 20px;text-align:center}
+    header h1{font-size:1.8em;font-weight:800;letter-spacing:-0.5px}
+    header p{opacity:.85;margin-top:6px;font-size:.95em}
+
+    /* Layout */
+    .page{max-width:1100px;margin:0 auto;padding:20px}
+    .main-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    @media(max-width:800px){.main-grid{grid-template-columns:1fr}}
+
+    /* Cards */
+    .card{background:white;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+    .card-title{font-size:1em;font-weight:700;color:#0f2d52;margin-bottom:16px;display:flex;align-items:center;gap:8px;border-bottom:2px solid #eff6ff;padding-bottom:10px}
+    .step-num{background:#1d4ed8;color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.75em;font-weight:700;flex-shrink:0}
+
+    /* Form */
+    .form-group{margin-bottom:14px}
+    label.field-label{display:block;font-weight:600;margin-bottom:5px;color:#374151;font-size:.875em}
+    input[type=number],select{width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.9em;color:#111;background:white;transition:border-color .2s}
+    input[type=number]:focus,select:focus{outline:none;border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:520px){.form-row{grid-template-columns:1fr}}
+    .helper{font-size:.78em;color:#6b7280;margin-top:3px}
+
+    /* Toggle buttons */
+    .btn-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+    .tgl{padding:7px 14px;border:1.5px solid #d1d5db;border-radius:20px;cursor:pointer;font-size:.83em;font-weight:600;background:white;color:#6b7280;transition:all .15s;user-select:none}
+    .tgl:hover{border-color:#1d4ed8;color:#1d4ed8}
+    .tgl.on{background:#1d4ed8;border-color:#1d4ed8;color:white}
+
+    /* Slider */
+    .slider-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+    .slider-row input[type=range]{flex:1;padding:0;border:none;cursor:pointer}
+    .slider-val{min-width:80px;text-align:right;font-weight:700;color:#1d4ed8;font-size:.92em}
+
+    /* Results sidebar */
+    .sticky-results{position:sticky;top:14px}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+    .rcard{background:#f8faff;border-radius:10px;padding:13px;border-left:4px solid #1d4ed8}
+    .rcard.green{border-left-color:#10b981}
+    .rcard.amber{border-left-color:#f59e0b}
+    .rcard.red{border-left-color:#ef4444}
+    .rcard .rlabel{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:3px}
+    .rcard .rval{font-size:1.22em;font-weight:800;color:#0f2d52;line-height:1.1}
+    .rcard .rsub{font-size:.75em;color:#9ca3af;margin-top:2px}
+
+    /* Eligibility */
+    .elig-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f3f4f6}
+    .elig-row:last-child{border-bottom:none}
+    .elig-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:2px}
+    .elig-icon.pass{background:#d1fae5;color:#065f46}
+    .elig-icon.fail{background:#fee2e2;color:#991b1b}
+    .elig-icon.warn{background:#fef9c3;color:#78350f}
+    .elig-text{font-size:.82em;font-weight:600;color:#374151}
+    .elig-note{font-size:.75em;color:#9ca3af}
+
+    /* Alerts */
+    .alert{padding:11px 14px;border-radius:9px;margin-bottom:10px;font-size:.85em;line-height:1.5}
+    .alert.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+    .alert.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
+    .alert.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+    .alert.bad{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}
+
+    /* Progress bar */
+    .pbar-wrap{margin-top:5px}
+    .pbar-labels{display:flex;justify-content:space-between;font-size:.78em;font-weight:600;margin-bottom:3px}
+    .pbar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+    .pbar-fill{height:100%;border-radius:4px;transition:width .4s ease}
+    .pbar-fill.green{background:#10b981}
+    .pbar-fill.amber{background:#f59e0b}
+    .pbar-fill.red{background:#ef4444}
+
+    /* Tabs */
+    .tabs{display:flex;border-bottom:2px solid #e5e7eb;margin-bottom:18px;overflow-x:auto;gap:2px}
+    .tab{padding:9px 16px;font-weight:700;font-size:.84em;cursor:pointer;color:#6b7280;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s}
+    .tab:hover{color:#1d4ed8}
+    .tab.on{color:#1d4ed8;border-bottom-color:#1d4ed8}
+    .tab-pane{display:none}
+    .tab-pane.on{display:block}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;font-size:.87em}
+    th{background:#0f2d52;color:white;padding:9px 12px;text-align:left;font-weight:600}
+    td{padding:8px 12px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    tr:hover td{background:#f8faff}
+    tr.hl td{background:#eff6ff;font-weight:700}
+    tfoot td{background:#0f2d52;color:white;font-weight:700;padding:10px 12px}
+
+    /* Timeline */
+    .tl{padding-left:28px;position:relative}
+    .tl::before{content:'';position:absolute;left:7px;top:6px;bottom:0;width:2px;background:#dbeafe}
+    .tl-item{position:relative;margin-bottom:20px}
+    .tl-item::before{content:'';position:absolute;left:-25px;top:5px;width:12px;height:12px;border-radius:50%;background:#1d4ed8;border:2px solid white;box-shadow:0 0 0 2px #1d4ed8}
+    .tl-item h4{font-size:.9em;font-weight:700;color:#0f2d52}
+    .tl-item p{font-size:.82em;color:#6b7280;margin-top:2px}
+    .tl-badge{display:inline-block;background:#dbeafe;color:#1e40af;font-size:.74em;font-weight:700;padding:2px 9px;border-radius:10px;margin-top:4px}
+
+    /* Priority schemes */
+    .scheme-card{border:1px solid #e5e7eb;border-radius:10px;padding:13px;margin-bottom:10px}
+    .scheme-card h4{font-size:.87em;font-weight:700;color:#0f2d52}
+    .scheme-card p{font-size:.8em;color:#6b7280;margin-top:3px}
+    .scheme-badge{display:inline-block;font-size:.74em;font-weight:700;padding:2px 9px;border-radius:10px;margin-top:6px}
+    .scheme-badge.yes{background:#d1fae5;color:#065f46}
+    .scheme-badge.no{background:#f1f5f9;color:#6b7280}
+
+    /* Footer */
+    footer{text-align:center;color:#9ca3af;font-size:.77em;margin:24px 0 10px;line-height:1.8}
+
+    /* Highlight text */
+    .hi{color:#1d4ed8;font-weight:700}
+    strong{font-weight:700}
+
+    /* Financial Readiness Plan */
+    .fp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+    @media(max-width:600px){.fp-grid{grid-template-columns:1fr}}
+    .ms-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+    @media(max-width:600px){.ms-grid{grid-template-columns:1fr}}
+    .ms-card{border-radius:12px;padding:16px;border:1.5px solid #e5e7eb}
+    .ms-card.on-track{border-color:#10b981;background:#f0fdf4}
+    .ms-card.behind{border-color:#f59e0b;background:#fffbeb}
+    .ms-title{font-weight:700;font-size:.93em;color:#0f2d52;margin-bottom:10px}
+    .ms-row{display:flex;justify-content:space-between;font-size:.82em;padding:3px 0;border-bottom:1px solid #f1f5f9}
+    .ms-row:last-child{border-bottom:none}
+    .ms-key{color:#6b7280}.ms-val{font-weight:700;color:#0f2d52}
+    .budget-tbl{width:100%;font-size:.85em;border-collapse:collapse}
+    .budget-tbl td{padding:5px 8px}
+    .budget-tbl .bsub{color:#6b7280;font-size:.82em}
+    .actions-list{margin:0;padding-left:20px;font-size:.86em;line-height:1.9}
+    .actions-list li{margin-bottom:5px}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Singapore HDB Flat Calculator 2026</h1>
+  <p id="hdr-sub">Plan your HDB flat purchase — eligibility, grants, financing, and full cost breakdown</p>
+</header>
+
+<div class="page">
+  <div class="main-grid">
+
+    <!-- ===== LEFT: INPUTS ===== -->
+    <div>
+
+      <!-- 1. Profile -->
+      <div class="card">
+        <div class="card-title"><span class="step-num">1</span> Your Profile</div>
+
+        <div class="form-group">
+          <label class="field-label">Purchase Type</label>
+          <div class="btn-group" id="g-mode">
+            <span class="tgl on" data-v="bto">New BTO Flat</span>
+            <span class="tgl" data-v="resale">Resale Flat</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">Application Scheme</label>
+          <div class="btn-group" id="g-scheme">
+            <span class="tgl on" data-v="couple">Couple / Family</span>
+            <span class="tgl" data-v="single">Single SC (35+)</span>
+            <span class="tgl" data-v="joint">Joint Singles (35+)</span>
+            <span class="tgl" data-v="orphan">Orphaned Siblings</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label">Main Applicant Age</label>
+            <input type="number" id="age" value="28" min="21" max="80" oninput="calc()">
+          </div>
+          <div class="form-group" id="coage-wrap">
+            <label class="field-label">Co-applicant Age</label>
+            <input type="number" id="coage" value="27" min="21" max="80" oninput="calc()">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label">Citizenship</label>
+            <select id="cship" onchange="calc()">
+              <option value="sc_sc">Both Singapore Citizens</option>
+              <option value="sc_spr">SC + Permanent Resident</option>
+              <option value="sc_fg">SC + Foreigner</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="field-label">First-timer Status</label>
+            <select id="ft" onchange="calc()">
+              <option value="both">Both First-timers</option>
+              <option value="one">One FT + One Second-timer</option>
+              <option value="neither">Both Second-timers</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Citizen Top-Up — shown only for SC+SPR couples -->
+        <div class="form-group" id="ctu-wrap" style="display:none">
+          <label class="field-label">Will the SPR partner obtain Singapore Citizenship?</label>
+          <div class="btn-group" id="g-ctu">
+            <span class="tgl" data-v="yes">Yes — planning to convert</span>
+            <span class="tgl on" data-v="no">No / Unsure</span>
+          </div>
+          <p class="helper" id="ctu-note"></p>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">Do you have Singapore Citizen children aged ≤ 18?</label>
+          <div class="btn-group" id="g-kids">
+            <span class="tgl on" data-v="yes">Yes</span>
+            <span class="tgl" data-v="no">No</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">Applying to live with / near parents or married child?</label>
+          <div class="btn-group" id="g-prox">
+            <span class="tgl" data-v="with">Live together</span>
+            <span class="tgl" data-v="near">Within 4 km</span>
+            <span class="tgl on" data-v="no">No</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Income, Employment & Ownership -->
+      <div class="card">
+        <div class="card-title"><span class="step-num">2</span> Income, Employment &amp; Ownership</div>
+
+        <!-- Employment type: one toggle per applicant -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label">Main Applicant Employment</label>
+            <div class="btn-group" id="g-emp1">
+              <span class="tgl on" data-v="salaried">Salaried</span>
+              <span class="tgl" data-v="self_emp">Self-Employed</span>
+              <span class="tgl" data-v="student">Student / NSman</span>
+            </div>
+          </div>
+          <div class="form-group" id="emp2-type-wrap">
+            <label class="field-label">Co-applicant Employment</label>
+            <div class="btn-group" id="g-emp2">
+              <span class="tgl on" data-v="salaried">Salaried</span>
+              <span class="tgl" data-v="self_emp">Self-Employed</span>
+              <span class="tgl" data-v="student">Student / NSman</span>
+            </div>
+          </div>
+        </div>
+        <div id="emp-info" style="margin-top:6px"></div>
+
+        <!-- Employment gap (hidden when both are DIA) -->
+        <div class="form-group" id="gap-wrap">
+          <label class="field-label">Months continuously employed in last 12 months</label>
+          <input type="number" id="emp-months" value="12" min="1" max="12" oninput="calc()">
+          <p class="helper">Enter the smaller of the two applicants' months if either has a gap. Gap months count as $0 in the 12-month income average, reducing both EHG and loan quantum.</p>
+          <div id="gap-warn"></div>
+        </div>
+
+        <!-- Ownership structure (not shown for singles) -->
+        <div class="form-group" id="own-struct-wrap">
+          <label class="field-label">Ownership Structure</label>
+          <div class="btn-group" id="g-own">
+            <span class="tgl on" data-v="joint">Joint Owners</span>
+            <span class="tgl" data-v="owner_eo">Owner + Essential Occupier</span>
+          </div>
+          <div id="own-info" style="margin-top:6px"></div>
+        </div>
+
+        <!-- Income: always two fields; second hidden for singles -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label" id="inc1-label">Main Applicant Gross Monthly Income</label>
+            <input type="number" id="inc1" value="4000" min="0" oninput="calc()">
+            <p class="helper" id="inc1-note"></p>
+          </div>
+          <div class="form-group" id="inc2-wrap">
+            <label class="field-label" id="inc2-label">Co-applicant Gross Monthly Income</label>
+            <input type="number" id="inc2" value="2000" min="0" oninput="calc()">
+            <p class="helper" id="inc2-note"></p>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <p class="helper" style="background:#f8faff;border-radius:7px;padding:8px 10px;border-left:3px solid #bfdbfe"><strong>Included in income assessment:</strong> salary, overtime, allowances, director's fees, incentives, occupier income. <strong>Excluded:</strong> bonuses, AWS, NS allowance, dividends, rental income, fixed deposit interest, pension, scholarships.</p>
+          </div>
+        </div>
+
+        <div id="ehg-msg"></div>
+
+        <!-- CPF: always two fields; second hidden for singles -->
+        <div class="form-row" style="margin-top:10px">
+          <div class="form-group">
+            <label class="field-label" id="cpf1-label">Main Applicant CPF OA ($)</label>
+            <input type="number" id="cpf1" value="35000" min="0" oninput="calc()">
+          </div>
+          <div class="form-group" id="cpf2-wrap">
+            <label class="field-label" id="cpf2-label">Co-applicant CPF OA ($)</label>
+            <input type="number" id="cpf2" value="15000" min="0" oninput="calc()">
+            <p class="helper" id="cpf2-note"></p>
+          </div>
+        </div>
+
+        <!-- Cash savings (always shown) -->
+        <div class="form-group" style="margin-top:10px">
+          <label class="field-label">Cash Savings for Housing</label>
+          <input type="number" id="cash" value="30000" min="0" oninput="calc()">
+        </div>
+
+      </div>
+
+      <!-- 3. Flat Details -->
+      <div class="card">
+        <div class="card-title"><span class="step-num">3</span> Flat Details</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label">Flat Type</label>
+            <select id="ftype" onchange="onFlatChange()">
+              <option value="2rm">2-Room Flexi</option>
+              <option value="3rm">3-Room</option>
+              <option value="4rm" selected>4-Room</option>
+              <option value="5rm">5-Room</option>
+              <option value="3gen">3-Gen Flat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="field-label">Estate Type</label>
+            <select id="estate" onchange="onFlatChange()">
+              <option value="non">Non-Mature Estate</option>
+              <option value="mat">Mature Estate</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="bclass-wrap">
+          <div class="form-group">
+            <label class="field-label">BTO Classification</label>
+            <div class="btn-group" id="g-bclass">
+              <span class="tgl on" data-v="standard">Standard</span>
+              <span class="tgl" data-v="plus">Plus</span>
+              <span class="tgl" data-v="prime">Prime</span>
+            </div>
+            <div id="class-info" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" id="price-label">Estimated Flat Price ($)</label>
+          <div class="slider-row">
+            <input type="range" id="pslide" min="80000" max="1500000" step="5000" value="400000" oninput="pSlide()">
+            <span class="slider-val" id="pdisp">$400,000</span>
+          </div>
+          <input type="number" id="price" value="400000" min="80000" oninput="pInput()" style="margin-top:7px">
+          <p class="helper" id="price-ref"></p>
+        </div>
+
+        <!-- Resale-specific inputs -->
+        <div id="resale-inputs" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="field-label">Remaining Lease (years)</label>
+              <input type="number" id="lease-yrs" value="80" min="20" max="99" oninput="calc()">
+              <p class="helper">Affects CPF usage limits. If your age + remaining lease &lt; 95, CPF usage for purchase is prorated.</p>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Cash Over Valuation — COV ($)</label>
+              <input type="number" id="cov" value="0" min="0" oninput="calc()">
+              <p class="helper">If purchase price exceeds HDB valuation, the difference must be paid entirely in cash (cannot use CPF).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Financing -->
+      <div class="card">
+        <div class="card-title"><span class="step-num">4</span> Financing</div>
+
+        <div class="form-group">
+          <label class="field-label">Loan Type</label>
+          <div class="btn-group" id="g-loan">
+            <span class="tgl on" data-v="hdb">HDB Concessionary Loan</span>
+            <span class="tgl" data-v="bank">Bank / FI Loan</span>
+            <span class="tgl" data-v="cash">No Loan (Full Cash)</span>
+          </div>
+          <p class="helper" id="loan-note" style="margin-top:6px"></p>
+        </div>
+
+        <div class="form-group" id="bankrate-wrap" style="display:none">
+          <label class="field-label">Bank Interest Rate (% p.a.)</label>
+          <input type="number" id="brate" value="3.5" min="0.5" max="10" step="0.05" oninput="calc()">
+          <p class="helper">Variable rate — check with your bank. Typical range: 3–4.5% p.a. in 2025–26.</p>
+        </div>
+
+        <div id="tenure-wrap">
+          <label class="field-label">Loan Tenure</label>
+          <div class="slider-row">
+            <input type="range" id="tslide" min="5" max="25" step="1" value="25" oninput="tSlide()">
+            <span class="slider-val" id="tdisp">25 yrs</span>
+          </div>
+          <input type="number" id="tenure" value="25" min="5" max="25" oninput="tInput()" style="margin-top:7px">
+          <p class="helper" id="tenure-note">HDB: max 25 yrs. Bank loans: &gt;25 yrs or IWAA + tenure &gt; 65 triggers reduced LTV (55%) and 10% min cash.</p>
+        </div>
+
+        <div id="sds-wrap" style="margin-top:14px">
+          <div class="form-group">
+            <label class="field-label">Staggered Downpayment Scheme (SDS)?</label>
+            <div class="btn-group" id="g-sds">
+              <span class="tgl" data-v="yes">Yes — split downpayment</span>
+              <span class="tgl on" data-v="no">No</span>
+            </div>
+            <p class="helper">SDS lets eligible first-timer couples split the downpayment: 2.5% at Agreement for Lease, balance at key collection. <strong>Eligibility: the younger applicant must be ≤ 30 years old.</strong> HDB loan: 2.5% + 17.5% split. Bank loan (75% LTV): 2.5% cash + 22.5% at keys.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">Outstanding housing loans?</label>
+          <div class="btn-group" id="g-prev">
+            <span class="tgl on" data-v="no">No outstanding loans</span>
+            <span class="tgl" data-v="yes">Yes (outstanding loan)</span>
+          </div>
+          <p class="helper">Having an outstanding loan reduces LTV for bank loans and may affect HDB loan eligibility.</p>
+        </div>
+
+      </div>
+
+      <!-- 5. Renovation -->
+      <div class="card">
+        <div class="card-title"><span class="step-num">5</span> Renovation</div>
+
+        <div class="form-group">
+          <label class="field-label">Expected Renovation Cost ($)</label>
+          <input type="number" id="fp-reno" value="45000" min="0" oninput="calc()">
+          <p class="helper">Pre-filled from flat type. Expand the breakdown below to customise by category, or type a total directly.</p>
+        </div>
+
+        <details id="reno-details" style="border:1px solid #dbeafe;border-radius:10px;padding:12px 16px;background:#f8faff;margin-top:4px">
+          <summary style="cursor:pointer;font-size:.88em;font-weight:700;color:#1d4ed8;display:flex;justify-content:space-between;align-items:center;list-style:none">
+            <span>Breakdown by Category</span>
+            <span style="font-size:.78em;color:#9ca3af;font-weight:400">Expand to customise</span>
+          </summary>
+          <div style="margin-top:14px">
+            <div class="fp-grid" id="reno-grid"></div>
+            <div id="reno-total"></div>
+            <p class="helper" style="margin-top:8px">Pre-filled estimates for a standard HDB renovation. Costs vary by contractor, materials, and scope. GST (9%) may apply. HDB renovation loans cover up to $30,000; bank renovation loans can go higher.</p>
+          </div>
+        </details>
+      </div>
+
+    </div><!-- end left col -->
+
+    <!-- ===== RIGHT: RESULTS ===== -->
+    <div class="sticky-results">
+      <div class="card">
+        <div class="card-title">Results</div>
+
+        <!-- Eligibility -->
+        <div id="elig-panel" style="margin-bottom:14px"></div>
+
+        <div style="border-top:1px solid #f1f5f9;padding-top:14px">
+          <div class="result-grid">
+            <div class="rcard green">
+              <div class="rlabel">EHG Grant</div>
+              <div class="rval" id="r-grant">—</div>
+              <div class="rsub">Credited to CPF OA</div>
+            </div>
+            <div class="rcard">
+              <div class="rlabel">Loan Amount</div>
+              <div class="rval" id="r-loan">—</div>
+              <div class="rsub" id="r-loan-sub"></div>
+            </div>
+            <div class="rcard amber">
+              <div class="rlabel">Downpayment</div>
+              <div class="rval" id="r-dp">—</div>
+              <div class="rsub" id="r-dp-sub"></div>
+            </div>
+            <div class="rcard">
+              <div class="rlabel">Monthly Instalment</div>
+              <div class="rval" id="r-mo">—</div>
+              <div class="rsub" id="r-mo-sub"></div>
+            </div>
+          </div>
+
+          <!-- IWAA -->
+          <div id="r-iwaa"></div>
+
+          <!-- MSR -->
+          <div id="r-msr"></div>
+
+          <!-- Cash check -->
+          <div id="r-cash"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-grid -->
+
+  <!-- ===== BOTTOM TABS ===== -->
+  <div class="card" style="margin-top:0">
+    <div class="tabs">
+      <div class="tab on"  onclick="tab('costs')">Cost Breakdown</div>
+      <div class="tab"     onclick="tab('pay')">Payment Schedule</div>
+      <div class="tab"     onclick="tab('tl')">Timeline</div>
+      <div class="tab"     onclick="tab('prio')">Priority Schemes</div>
+      <div class="tab"     onclick="tab('ehgtab')">EHG Table</div>
+    </div>
+
+    <div class="tab-pane on" id="tp-costs">
+      <table>
+        <thead><tr><th>Item</th><th>Amount</th><th>When</th><th>Funded By</th></tr></thead>
+        <tbody id="cost-body"></tbody>
+        <tfoot id="cost-foot"></tfoot>
+      </table>
+      <p class="helper" style="margin-top:10px">Stamp duty = Buyer's Stamp Duty (BSD). Legal fees are estimates. Renovation budget is a planning guideline. ABSD applies only for non-first-property purchases. Option fee is deductible from the downpayment.</p>
+    </div>
+
+    <div class="tab-pane" id="tp-pay">
+      <div id="pay-content"></div>
+    </div>
+
+    <div class="tab-pane" id="tp-tl">
+      <div class="tl" id="tl-content"></div>
+    </div>
+
+    <div class="tab-pane" id="tp-prio">
+      <div id="prio-content"></div>
+    </div>
+
+    <div class="tab-pane" id="tp-ehgtab">
+      <div id="ehgtab-content"></div>
+    </div>
+  </div>
+
+  <!-- ===== FINANCIAL READINESS PLAN ===== -->
+  <div class="card" id="fp-card" style="margin-top:20px">
+    <div class="card-title">Financial Readiness Plan</div>
+    <p style="font-size:.87em;color:#6b7280;margin-bottom:16px">Enter your savings capacity and investment assumptions to see a personalised plan for reaching your BTO purchase goals.</p>
+
+    <p style="font-size:.8em;font-weight:700;color:#0f2d52;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Monthly Savings &amp; BTO Allocation</p>
+    <div class="fp-grid">
+      <div class="form-group">
+        <label class="field-label">Total monthly savings after all expenses ($)</label>
+        <input type="number" id="fp-total-save" value="2000" min="0" oninput="calc()">
+        <p class="helper">Combined household savings each month after rent, food, transport, subscriptions, insurance, etc.</p>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Amount earmarked for BTO ($)</label>
+        <input type="number" id="fp-bto-save" value="1500" min="0" oninput="calc()">
+        <p class="helper">Of your total savings, how much is specifically set aside for BTO? The rest stays free for other goals.</p>
+      </div>
+    </div>
+    <div id="savings-split" style="margin-bottom:18px"></div>
+
+    <div style="height:1px;background:#e5e7eb;margin:4px 0 18px"></div>
+
+    <p style="font-size:.8em;font-weight:700;color:#0f2d52;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Planning Assumptions</p>
+    <div class="fp-grid">
+      <div class="form-group">
+        <label class="field-label">Annual Return Rate (% p.a.)</label>
+        <input type="number" id="fp-rate" value="4" min="0" max="20" step="0.5" oninput="planCalc()">
+        <p class="helper">CPF OA = 2.5%, T-bills ≈ 3.5%, SSB ≈ 3%, equities ≈ 6–8%</p>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Months Until BTO Application</label>
+        <input type="number" id="fp-months" value="12" min="1" max="120" oninput="planCalc()">
+        <p class="helper">How soon you plan to submit your BTO application (from today)</p>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Monthly Living Expenses ($)</label>
+        <input type="number" id="fp-exp" value="2500" min="0" oninput="planCalc()">
+        <p class="helper">Regular costs (food, transport, utilities) — excludes mortgage</p>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Emergency Fund (months of expenses)</label>
+        <input type="number" id="fp-emfund" value="6" min="1" max="24" oninput="planCalc()">
+        <p class="helper">Target buffer post-purchase. Recommended: ≥ 6 months</p>
+      </div>
+    </div>
+
+    <div id="fp-milestones"></div>
+    <div id="fp-chart" style="margin:18px 0"></div>
+    <div id="fp-budget" style="margin-top:10px"></div>
+    <div id="fp-actions" style="margin-top:18px"></div>
+  </div>
+
+  <footer>
+    For planning purposes only. Based on HDB / CPF guidelines as of 2024–2026 (EHG updated Aug 2024).<br>
+    Always verify with <a href="https://www.hdb.gov.sg" target="_blank">HDB</a>, CPF Board, and a licensed financial adviser before making decisions.
+  </footer>
+</div><!-- end page -->
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────
+const S = {
+  scheme:'couple', kids:'yes', prox:'no',
+  loan:'hdb', sds:'no', prev:'no', bclass:'standard',
+  emp1:'salaried', emp2:'salaried', own:'joint',
+  ctu:'no', mode:'bto'
+};
+
+// ─── RESALE GRANT TABLES ──────────────────────────────────────────
+// CPF Housing Grant (Family) for resale — SC+SC vs SC+SPR, by flat size
+const FAMILY_GRANT = {
+  sc_sc:  {'2rm':80000,'3rm':80000,'4rm':80000,'5rm':50000,'3gen':50000},
+  sc_spr: {'2rm':70000,'3rm':70000,'4rm':70000,'5rm':40000,'3gen':40000}
+};
+// CPF Housing Grant (Singles) for resale — by flat size
+const SINGLES_GRANT = {'2rm':40000,'3rm':40000,'4rm':40000,'5rm':25000,'3gen':25000};
+// Proximity Housing Grant — living with/near parents, SC+SC vs SC+SPR
+// PHG amounts are the same for SC+SC and SC+SPR families — no citizenship deduction
+const PHG = {
+  sc_sc:  {with:30000, near:20000},
+  sc_spr: {with:30000, near:20000}
+};
+// Resale typical price ranges (SGD)
+const PREF_RESALE = {
+  '2rm':{non:[200000,350000],mat:[280000,430000]},
+  '3rm':{non:[380000,520000],mat:[450000,700000]},
+  '4rm':{non:[500000,750000],mat:[650000,950000]},
+  '5rm':{non:[650000,900000],mat:[800000,1200000]},
+  '3gen':{non:[750000,1000000],mat:[900000,1400000]}
+};
+let _planOpts = null; // cached from calc() so FP inputs can trigger planCalc() without args
+
+// ─── EHG TABLES (Aug 2024) ───────────────────────────────────────
+const EHG_FAM = [
+  [1500,120000],[2000,110000],[2500,105000],[3000,95000],
+  [3500,90000],[4000,80000],[4500,70000],[5000,65000],
+  [5500,55000],[6000,50000],[6500,40000],[7000,30000],
+  [7500,25000],[8000,20000],[8500,10000],[9000,5000],[Infinity,0]
+];
+const EHG_SGL = [
+  [750,60000],[1000,55000],[1250,52500],[1500,47500],
+  [1750,45000],[2000,40000],[2250,35000],[2500,32500],
+  [2750,27500],[3000,25000],[3250,20000],[3500,15000],
+  [3750,12500],[4000,10000],[4250,5000],[4500,2500],[Infinity,0]
+];
+
+// ─── PRICE REFERENCE RANGES (SGD) ────────────────────────────────
+const PREF = {
+  '2rm':{non:[100000,200000],mat:[150000,260000]},
+  '3rm':{non:[200000,330000],mat:[290000,440000]},
+  '4rm':{non:[310000,480000],mat:[420000,680000]},
+  '5rm':{non:[420000,600000],mat:[570000,820000]},
+  '3gen':{non:[520000,720000],mat:[660000,950000]}
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const N = id => parseFloat($(id).value) || 0;
+const I = id => parseInt($(id).value)  || 0;
+function fmt(n){ return '$' + Math.round(Math.abs(n)).toLocaleString('en-SG'); }
+function pct(n,d){ return d ? (n/d*100).toFixed(1)+'%' : '—'; }
+
+function ehgLookup(income, isSingle){
+  const t = isSingle ? EHG_SGL : EHG_FAM;
+  for(const [max,g] of t) if(income<=max) return g;
+  return 0;
+}
+
+function bsd(price){
+  let d=0, rem=price;
+  const bands=[[180000,.01],[180000,.02],[640000,.03],[Infinity,.04]];
+  for(const [cap,r] of bands){
+    if(rem<=0) break;
+    const chunk=Math.min(rem,cap);
+    d+=chunk*r; rem-=chunk;
+  }
+  return d;
+}
+
+function pmt(principal,annualPct,years){
+  if(principal<=0||years<=0) return 0;
+  const r=annualPct/100/12, n=years*12;
+  if(r===0) return principal/n;
+  return principal*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+}
+
+function legalFee(price){
+  // HDB conveyancing scale + disbursements estimate
+  let f=0, rem=price;
+  if(rem>0){f+=Math.min(rem,30000)*0.0009; rem-=30000;}
+  if(rem>0){f+=Math.min(rem,30000)*0.00072; rem-=30000;}
+  if(rem>0){f+=rem*0.0006;}
+  return Math.max(f,20)+400; // add disbursements
+}
+
+// ─── TOGGLE BUTTON GROUPS ─────────────────────────────────────────
+document.querySelectorAll('[id^="g-"]').forEach(grp=>{
+  grp.querySelectorAll('.tgl').forEach(btn=>{
+    btn.onclick=()=>{
+      grp.querySelectorAll('.tgl').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      const key=grp.id.slice(2);
+      S[key]=btn.dataset.v;
+      if(key==='loan'){
+        $('bankrate-wrap').style.display=S.loan==='bank'?'block':'none';
+        $('tenure-wrap').style.display=S.loan==='cash'?'none':'block';
+      }
+      calc();
+    };
+  });
+});
+
+// ─── SLIDER SYNC ─────────────────────────────────────────────────
+function pSlide(){
+  const v=$('pslide').value;
+  $('price').value=v;
+  $('pdisp').textContent=fmt(v);
+  calc();
+}
+function pInput(){
+  const v=N('price');
+  $('pslide').value=Math.min(Math.max(v,80000),1500000);
+  $('pdisp').textContent=fmt(v);
+  calc();
+}
+function tSlide(){
+  const v=$('tslide').value;
+  $('tenure').value=v;
+  $('tdisp').textContent=v+' yrs';
+  calc();
+}
+function tInput(){
+  const v=I('tenure');
+  $('tslide').value=Math.min(Math.max(v,5),25);
+  $('tdisp').textContent=v+' yrs';
+  calc();
+}
+function onFlatChange(){
+  updatePriceRef();
+  initRenoPreset($('ftype').value);
+  calc();
+}
+
+function updatePriceRef(){
+  const ft=$('ftype').value, et=$('estate').value==='non'?'non':'mat';
+  const isResale=S.mode==='resale';
+  const r=isResale?PREF_RESALE[ft][et]:PREF[ft][et];
+  $('price-ref').textContent=`Typical ${isResale?'resale':'BTO'} range: ${fmt(r[0])} – ${fmt(r[1])} (indicative only; actual prices vary by location & condition)`;
+}
+
+// ─── MAIN CALCULATION ─────────────────────────────────────────────
+function calc(){
+  const isResale=S.mode==='resale';
+  const scheme=S.scheme;
+  const age=I('age'), coage=I('coage');
+  const cship=$('cship').value;
+  const ft=$('ft').value;
+  const ftype=$('ftype').value;
+  const estate=$('estate').value;
+  const price=N('price');
+  const cov=isResale?N('cov'):0;
+  const leaseYrs=isResale?(I('lease-yrs')||80):99;
+  const cashSav=N('cash');
+  const loan=S.loan;
+  const brate=N('brate');
+  const tenure=I('tenure');
+  const sds=S.sds==='yes';
+  const prev=S.prev==='yes';
+  const ownerType=S.own;
+  const emp1=S.emp1;
+  const hasCoapp=scheme!=='single';
+  const emp2=hasCoapp?S.emp2:'salaried';
+  const isDIA=emp1==='student'||(hasCoapp&&S.emp2==='student');
+  const isSelf=emp1==='self_emp'||(hasCoapp&&S.emp2==='self_emp');
+  const empMonths=Math.min(12,Math.max(1,I('emp-months')||12));
+  const isEO=ownerType==='owner_eo'&&hasCoapp;
+
+  // ── SHOW / HIDE DYNAMIC FIELDS ──
+  // BTO vs Resale mode
+  $('bclass-wrap').style.display=isResale?'none':'block';
+  $('sds-wrap').style.display=isResale?'none':'block';
+  $('resale-inputs').style.display=isResale?'block':'none';
+  $('hdr-sub').textContent=isResale
+    ?' Plan your HDB resale flat purchase — eligibility, grants, financing, and cost breakdown'
+    :'Plan your HDB BTO flat purchase — eligibility, grants, financing, and full cost breakdown';
+  $('price-label').textContent=isResale?'Resale Purchase Price ($)':'Estimated Flat Price ($)';
+
+  $('coage-wrap').style.display=hasCoapp?'block':'none';
+  $('own-struct-wrap').style.display=hasCoapp?'block':'none';
+  $('emp2-type-wrap').style.display=hasCoapp?'block':'none';
+  $('inc2-wrap').style.display=hasCoapp?'block':'none';
+  $('cpf2-wrap').style.display=hasCoapp?'block':'none';
+  $('gap-wrap').style.display=isDIA?'none':'block';
+
+  // ── CITIZEN TOP-UP ──
+  const isSPR = cship==='sc_spr' && hasCoapp;
+  $('ctu-wrap').style.display=isSPR?'block':'none';
+  const isCTU = isSPR && S.ctu==='yes';
+  if(isSPR){
+    $('ctu-note').innerHTML=isCTU
+      ? `When the SPR partner obtains SC, apply within <strong>6 months</strong> for the <strong>$10,000 Citizen Top-Up</strong> — credited to CPF OA. Also qualifies if an SC child is born to the household.`
+      : `SC+SPR households pay a <strong>$10,000 premium</strong> vs SC+SC for the same flat. If the SPR ever obtains SC, you can recover this via the Citizen Top-Up (apply within 6 months of conversion).`;
+  }
+
+  // Update dynamic labels based on ownership structure
+  const eoMode=isEO&&hasCoapp;
+  $('inc1-label').textContent=eoMode?'Owner\'s Gross Monthly Income':'Main Applicant Gross Monthly Income';
+  $('inc1-note').innerHTML=emp1==='self_emp'?'Income via IRAS NOA (prior year ÷ 12). No employer CPF contribution.':
+                            emp1==='student'?'Enter expected income at key collection (DIA applies).':
+                            'Salaried: employer contributes ~17% to CPF (OA allocation ≈ 23% of wages).';
+  if(hasCoapp){
+    $('inc2-label').textContent=eoMode?'Essential Occupier\'s Monthly Income':'Co-applicant Gross Monthly Income';
+    $('inc2-note').innerHTML=eoMode?'Counts toward EHG household income. <strong>Not</strong> used for loan quantum.':
+                              emp2==='self_emp'?'Income via IRAS NOA. No employer CPF contribution.':
+                              emp2==='student'?'Enter expected income at key collection.':
+                              'Salaried: both CPF OAs flow to this flat.';
+    $('cpf2-label').textContent=eoMode?'Essential Occupier\'s CPF OA ($)':'Co-applicant CPF OA ($)';
+    $('cpf2-note').textContent=eoMode?'Preserved for EO\'s future property — cannot fund this flat.':'Both CPF OAs used for downpayment and monthly instalments.';
+  }
+
+  // ── INCOME ──
+  const inc1=N('inc1');
+  const inc2=hasCoapp?N('inc2'):0;
+  const combinedIncome=inc1+inc2;
+  const ownerIncome=isEO?inc1:combinedIncome;
+  const effectiveIncome=isDIA?combinedIncome:combinedIncome*(empMonths/12);
+  const effectiveOwnerIncome=isDIA?ownerIncome:ownerIncome*(empMonths/12);
+  const cpf1=N('cpf1');
+  const cpf2=hasCoapp?N('cpf2'):0;
+  const cpfForHDB=isEO?cpf1:cpf1+cpf2;
+  const eoCPF=isEO?cpf2:0;
+
+  // ── EMPLOYMENT / OWNERSHIP INFO PANELS ──
+  renderEmpInfo(emp1,emp2,hasCoapp,empMonths,inc1,inc2,effectiveIncome,isDIA);
+  renderOwnerInfo(ownerType,hasCoapp,eoCPF);
+  renderGapWarn(empMonths,combinedIncome,effectiveIncome,isDIA);
+
+  // ── IWAA (Income Weighted Average Age) ──
+  // MAS rule: bank loans use IWAA to determine "effective borrower age" for LTV and tenure limits.
+  // For joint loans: weighted by each borrower's income share.
+  // For single applicant or Owner+EO: IWAA = owner's age (EO is not a co-borrower).
+  let iwaa;
+  if(!hasCoapp || isEO){
+    iwaa = age;
+  } else {
+    const totalInc = inc1 + inc2;
+    iwaa = totalInc > 0 ? (age*inc1 + coage*inc2)/totalInc : (age+coage)/2;
+  }
+  const ageAtMaturity = iwaa + tenure;
+  // Reduced LTV for bank loans: tenure > 25yr (HDB) OR IWAA + tenure > 65
+  const reducedLTV = loan==='bank' && (tenure > 25 || ageAtMaturity > 65);
+
+  // ── LOAN NOTE ──
+  if(loan==='hdb'&&effectiveOwnerIncome>14000){
+    $('loan-note').innerHTML=`<span style="color:#b45309">&#9888; HDB loan requires household income ≤ $14,000/month. Your income exceeds this — consider a bank loan.</span>`;
+  } else if(loan==='hdb'){
+    const hdbMaxT=Math.max(1,Math.min(25,Math.floor(65-iwaa)));
+    $('loan-note').innerHTML=`HDB concessionary loan: 2.6% p.a. (actual rate), 75% LTV. No minimum cash.${hasCoapp&&!isEO?` IWAA: <strong>${iwaa.toFixed(1)} yrs</strong>.`:''} Max tenure: <strong>${hdbMaxT} yrs</strong> (IWAA ${iwaa.toFixed(1)} + ${hdbMaxT} = ${(iwaa+hdbMaxT).toFixed(0)} ≤ 65). <em>Note: HDB computes your eligible loan quantum using a 3% stress rate — the actual disbursement rate remains 2.6%.</em>`;
+  } else if(loan==='bank'){
+    const iwaaStr=hasCoapp&&!isEO?`IWAA ${iwaa.toFixed(1)} yrs — `:`Age ${Math.round(iwaa)} yrs — `;
+    if(reducedLTV){
+      const reason=ageAtMaturity>65?`IWAA+tenure = ${ageAtMaturity.toFixed(0)} yrs > 65`:`Tenure ${tenure} yrs > 25-yr HDB cap`;
+      $('loan-note').innerHTML=`<span style="color:#b45309">&#9888; <strong>Reduced LTV: 55%</strong> (min <strong>10% cash</strong>) — ${reason}. ${iwaaStr}Age at maturity: ${ageAtMaturity.toFixed(0)} yrs.${prev?' Outstanding loan reduces LTV further to 25%.':''}</span>`;
+    } else {
+      $('loan-note').innerHTML=`Bank loan: <strong>75% LTV</strong>, min 5% cash. ${iwaaStr}Age at maturity: ${ageAtMaturity.toFixed(0)} yrs ≤ 65 ✓${prev?' — outstanding loan reduces LTV to 45%.':''}`;
+    }
+  } else {
+    $('loan-note').textContent='Full cash purchase — no loan required.';
+  }
+
+  // ── CLASSIFICATION INFO ──
+  renderClassInfo(S.bclass,price);
+
+  // ── ELIGIBILITY ──
+  const elig=computeElig(scheme,age,coage,cship,ft,ftype,estate,effectiveIncome,loan,tenure,prev,S.bclass,emp1,emp2,hasCoapp,ownerType,empMonths,isEO,effectiveOwnerIncome,iwaa,reducedLTV,isCTU);
+  renderElig(elig);
+
+  // ── EHG / GRANTS ──
+  const isSingle=(scheme==='single'||scheme==='joint');
+  const ehgCeiling=isSingle?4500:9000;
+  let ehg=0;
+  if(ft==='both') ehg=ehgLookup(effectiveIncome,isSingle);
+  // Mixed couple (one FT + one ST): HDB uses half the combined household income against the Singles EHG tier
+  else if(ft==='one') ehg=ehgLookup(isSingle?effectiveIncome:effectiveIncome/2, true);
+
+  // Resale-only grants (Family Grant, PHG, Singles Grant)
+  let familyGrant=0, phgAmt=0, singlesGrant=0;
+  if(isResale){
+    const is5rm=ftype==='5rm'||ftype==='3gen';
+    // CPF Housing Grant (Families) — first-timers only, income ≤ $14K
+    if(!isSingle && ft!=='neither' && effectiveIncome<=14000){
+      familyGrant=(FAMILY_GRANT[cship]||FAMILY_GRANT.sc_sc)[ftype]||0;
+    }
+    // CPF Housing Grant (Singles) — first-timers, income ≤ $7K
+    if(isSingle && ft!=='neither' && effectiveIncome<=7000){
+      singlesGrant=SINGLES_GRANT[ftype]||0;
+    }
+    // Proximity Housing Grant — no income ceiling
+    const proxKey=S.prox==='with'?'with':S.prox==='near'?'near':null;
+    if(proxKey) phgAmt=(PHG[cship]||PHG.sc_sc)[proxKey]||0;
+  }
+  const totalGrant=ehg+(isResale?(familyGrant+singlesGrant+phgAmt):0);
+
+  if(isResale){
+    renderResaleGrantMsg(ehg,familyGrant,singlesGrant,phgAmt,effectiveIncome,isSingle,ft,cship,S.prox,ftype);
+  } else {
+    renderEHGMsg(ehg,effectiveIncome,combinedIncome,isSingle,ehgCeiling,ft,isDIA,isSelf,empMonths);
+  }
+
+  // ── LOAN / DOWNPAYMENT ──
+  // Bank: 75% LTV standard → 55% if tenure>25yr or IWAA+tenure>65 (MAS reduced LTV rule)
+  // Second outstanding loan: 45% → 25% under reduced conditions
+  let ltv, minCashPct;
+  if(loan==='hdb'){
+    ltv=prev?0:0.75; minCashPct=0;
+  } else if(loan==='bank'){
+    if(prev){ ltv=reducedLTV?0.25:0.45; minCashPct=0.25; }
+    else     { ltv=reducedLTV?0.55:0.75; minCashPct=reducedLTV?0.10:0.05; }
+  } else {
+    ltv=0; minCashPct=1;
+  }
+
+  const loanAmt=price*ltv;
+  const dpTotal=price-loanAmt;
+  const mandCash=loan==='cash'?price:price*minCashPct;
+  const cpfAvail=cpfForHDB+totalGrant;
+  // CPF cannot be used for COV — subtract COV from what CPF can cover
+  const dpViaCPF=loan==='cash'?0:Math.min(cpfAvail,dpTotal-mandCash-cov);
+  const dpViaCash=dpTotal-dpViaCPF+cov; // COV always adds to cash needed
+
+  const rate=loan==='hdb'?2.6:brate;
+  const monthly=pmt(loanAmt,rate,tenure);
+
+  // ── FEES ──
+  // Resale option fee: negotiated; typical 1% capped by flat size
+  const optFee=isResale
+    ?(ftype==='2rm'?Math.min(price*0.01,2000):ftype==='3rm'?Math.min(price*0.01,5000):Math.min(price*0.01,10000))
+    :(ftype==='2rm'?500:ftype==='3rm'?1000:2000);
+  const surveyFee=(ftype==='2rm'?150:ftype==='3rm'?212.5:ftype==='4rm'?275:325)*1.09;
+  const sdAmt=bsd(price);
+  const lgFee=legalFee(price);
+  const reno=N('fp-reno');
+  const hpsAnnual=loan==='hdb'?Math.round(loanAmt*0.0012+age*8):0;
+
+  // ── STAGING (DIA / SDS / standard) ──
+  // DIA implies SDS: 2.5% at AoL (vs SDS 5%, vs standard 10%)
+  let dpAtSigning, dpAtKeys;
+  if(isDIA&&loan==='hdb'){
+    dpAtSigning=price*0.025; dpAtKeys=price*0.025;
+  } else if(loan==='hdb'&&sds){
+    dpAtSigning=price*0.05; dpAtKeys=price*0.05;
+  } else if(loan==='bank'){
+    dpAtSigning=price*0.10; dpAtKeys=price*0.15;
+  } else {
+    dpAtSigning=dpTotal; dpAtKeys=0;
+  }
+
+  // ── SUMMARY PANEL ──
+  const grantLabel=isResale?'Total Grants':'EHG Grant';
+  document.querySelector('#r-grant').previousElementSibling.textContent=grantLabel;
+  $('r-grant').textContent=isDIA?`~${fmt(ehg)} (est.)`:(totalGrant>0?fmt(totalGrant):'Not eligible');
+  $('r-loan').textContent=loan==='cash'?'N/A':fmt(loanAmt);
+  $('r-loan-sub').textContent=loan==='cash'?'Full cash purchase':`${(ltv*100).toFixed(0)}% LTV @ ${rate}% p.a.`;
+  $('r-dp').textContent=fmt(dpTotal+(isResale?cov:0));
+  $('r-dp-sub').textContent=loan==='cash'?'Full amount':`CPF: ${fmt(dpViaCPF)} | Cash: ${fmt(dpViaCash)}${cov>0?` (+COV ${fmt(cov)})`:'' }`;
+  $('r-mo').textContent=loan==='cash'?'$0':fmt(monthly);
+  $('r-mo-sub').textContent=loan==='cash'?'':`Over ${tenure} yrs`;
+
+  renderIWAA(iwaa,ageAtMaturity,reducedLTV,loan,tenure,hasCoapp,isEO,age,coage,inc1,inc2);
+  renderMSR(monthly,effectiveOwnerIncome,loan,isEO);
+  const cashNeeded=(loan==='cash'?0:dpViaCash)+sdAmt+lgFee+optFee+cov;
+  renderCash(cashSav,cashNeeded,dpViaCash,sdAmt,optFee,lgFee);
+
+  // ── TABS ──
+  renderCosts(price,totalGrant,dpViaCPF,dpViaCash,loanAmt,sdAmt,optFee,surveyFee,lgFee,10,hpsAnnual,reno,loan,ftype,S.bclass,cship,isCTU,isResale,cov,familyGrant,phgAmt,singlesGrant,ehg);
+  renderPay(price,dpTotal,dpAtSigning,dpAtKeys,loanAmt,monthly,ehg,dpViaCPF,mandCash,sdAmt,lgFee,optFee,loan,sds,tenure,rate,cpfForHDB,isDIA,isSelf,isResale,cov,totalGrant);
+  renderTimeline(S.bclass,isResale);
+  renderPrio(scheme,S.kids,S.prox,ft,ftype,estate,age,cship,isResale);
+  if(!isResale) renderEHGTab(isSingle,effectiveIncome);
+  else $('tp-ehgtab').innerHTML='<div class="alert info" style="font-size:.85em">EHG table applies to resale flats too — same income tiers and amounts. See the BTO mode for the full table.</div>';
+
+  // ── SAVINGS SPLIT ──
+  renderSavingsSplit(N('fp-total-save'), N('fp-bto-save'));
+
+  // ── FINANCIAL READINESS PLAN ──
+  planCalc({optFee,dpViaCash,sdAmt,lgFee,surveyFee,reno0:reno,monthly,loan,isDIA,
+            ownerIncome:effectiveOwnerIncome,dpAtKeys,emp1,emp2,inc1,inc2,hasCoapp,isEO,isCTU,
+            isResale,cov,monthsToApply:isResale?3:undefined});
+}
+
+// ─── EMPLOYMENT INFO ──────────────────────────────────────────────
+function renderEmpInfo(emp1,emp2,hasCoapp,empMonths,inc1,inc2,effectiveIncome,isDIA){
+  const info={
+    salaried:{cls:'info', short:'Salaried',
+      html:'Gross monthly salary before CPF. <strong>Employer contributes ~17% of wages to CPF</strong> (total OA allocation ≈ 23% of wages up to $6,000/month), reducing the cash cost of your mortgage.'},
+    self_emp:{cls:'warn', short:'Self-Employed',
+      html:'Income assessed via IRAS Notice of Assessment (NOA) — prior year declared income ÷ 12. <strong>No employer CPF contribution</strong> — your CPF OA receives no automatic top-up from business income, so the full mortgage cash cost must be paid in cash (unless you voluntarily top up CPF).'},
+    student:{cls:'ok', short:'Student / NSman',
+      html:'DIA eligible. Income, EHG, and loan quantum assessed at key collection (~3–5 years away). Enter your <em>expected</em> income at that point for planning.'}
+  };
+  const m1=info[emp1]||info.salaried;
+  let html='';
+  if(!hasCoapp){
+    html=`<div class="alert ${m1.cls}" style="font-size:.82em">${m1.html}</div>`;
+  } else {
+    const m2=info[emp2]||info.salaried;
+    if(emp1===emp2){
+      html=`<div class="alert ${m1.cls}" style="font-size:.82em"><strong>Both ${m1.short}:</strong> ${m1.html}</div>`;
+    } else {
+      html=`<div class="alert ${m1.cls}" style="font-size:.82em;margin-bottom:6px"><strong>Main applicant (${m1.short}):</strong> ${m1.html}</div>
+            <div class="alert ${m2.cls}" style="font-size:.82em"><strong>Co-applicant (${m2.short}):</strong> ${m2.html}</div>`;
+    }
+    if(isDIA&&!(emp1==='student'&&emp2==='student')){
+      html+=`<div class="alert ok" style="font-size:.82em;margin-top:6px"><strong>DIA active</strong> — at least one applicant qualifies, so Deferred Income Assessment applies to both. Income and EHG assessed closer to key collection.</div>`;
+    }
+  }
+  $('emp-info').innerHTML=html;
+}
+
+// ─── OWNERSHIP INFO ────────────────────────────────────────────────
+function renderOwnerInfo(ownerType,hasCoapp,eoCPF){
+  if(!hasCoapp){$('own-info').innerHTML=''; return;}
+  if(ownerType==='joint'){
+    $('own-info').innerHTML=`<div class="alert info" style="font-size:.82em">
+      <strong>Joint Owners:</strong> Both applicants are legally co-owners. Both incomes count for the loan MSR calculation. Both can use their CPF OA for downpayment and monthly instalments.
+      Both will be treated as property owners on any future purchase (ABSD applies).</div>`;
+  } else {
+    $('own-info').innerHTML=`<div class="alert warn" style="font-size:.82em">
+      <strong>Owner + Essential Occupier:</strong> Only the <em>owner</em> holds legal title. The EO is not a co-owner and has <strong>no legal claim</strong> on the property (including in divorce).<br>
+      <strong>Key trade-offs:</strong><br>
+      ✓ EO is treated as a first-time property buyer after MOP — can purchase private property without ABSD (saving up to ~17% on future purchase)<br>
+      ✗ Only owner's CPF and income used for this flat's loan — lower loan quantum, no EO CPF usage${eoCPF>0?` (EO's CPF OA of ${fmt(eoCPF)} is preserved for their future purchase)`:''}<br>
+      ✗ Structure cannot be changed post-application except in extenuating circumstances (divorce, death, financial hardship)<br>
+      ✗ EO cannot own private property <em>during</em> MOP</div>`;
+  }
+}
+
+// ─── EMPLOYMENT GAP WARNING ───────────────────────────────────────
+function renderGapWarn(empMonths,income,effectiveIncome,isDIA){
+  if(isDIA||empMonths>=12){$('gap-warn').innerHTML=''; return;}
+  const reduction=((1-empMonths/12)*100).toFixed(0);
+  $('gap-warn').innerHTML=`<div class="alert warn" style="margin-top:6px;font-size:.82em">
+    <strong>Gap detected:</strong> ${empMonths} of 12 months employed → effective 12-month average = <strong>${fmt(effectiveIncome)}/month</strong> (${reduction}% lower than stated income of ${fmt(income)}/month).
+    This reduces both your EHG amount and the loan quantum HDB will approve. Consider timing your HFE application once you have 12 full months of employment.</div>`;
+}
+
+// ─── CLASSIFICATION INFO PANEL ────────────────────────────────────
+const CLASS_DATA = {
+  standard:{
+    colour:'#166534', bg:'#f0fdf4', border:'#bbf7d0',
+    title:'Standard Flat',
+    location:'Typical HDB estates — forms the bulk of BTO supply.',
+    mop:'5 years',
+    rental:'Whole-unit rental allowed after MOP (subject to HDB approval).',
+    resale:'No resale income ceiling or buyer restrictions beyond standard HDB rules.',
+    clawback:'None.',
+    extra:'Standard flats come with the usual EHG subsidy (no additional top-up).'
+  },
+  plus:{
+    colour:'#1e40af', bg:'#eff6ff', border:'#bfdbfe',
+    title:'Plus Flat',
+    location:'Choicer locations within each region — near MRT, town centre, or key amenities.',
+    mop:'10 years (double the Standard MOP)',
+    rental:'Spare rooms may be rented out (3-room or larger), but <strong>whole-unit rental is not allowed — even after MOP</strong>.',
+    resale:'Future resale buyers must be Singapore Citizens with household income ≤ $14,000/month. Private property owners face a 30-month wait-out period.',
+    clawback:'<strong>6–8% of the resale price</strong> is returned to HDB when you sell. Calculator uses 7% (midpoint) for estimates.',
+    extra:'Plus flats receive additional subsidies on top of EHG, making the purchase price lower than market value for the location.'
+  },
+  prime:{
+    colour:'#7c3aed', bg:'#faf5ff', border:'#ddd6fe',
+    title:'Prime Flat',
+    location:'Singapore\'s choicest, most central locations — near the city centre or highly sought-after areas.',
+    mop:'10 years (double the Standard MOP)',
+    rental:'Spare rooms may be rented out (3-room or larger), but <strong>whole-unit rental is not allowed — ever</strong>.',
+    resale:'Future resale buyers must be Singapore Citizens. Income ceiling: <strong>$14,000/month for families</strong>; <strong>$7,000/month for singles</strong>. Private property owners face a 30-month wait-out period.',
+    clawback:'<strong>9% of the resale price</strong> is returned to HDB when you sell.',
+    extra:'Prime flats come with the highest additional subsidies. They are the most affordable entry point into prime locations but carry the tightest long-term restrictions.'
+  }
+};
+
+function renderClassInfo(bclass, price){
+  const d=CLASS_DATA[bclass];
+  const isStd=bclass==='standard';
+  const clawAmt=bclass==='prime'?price*0.09:bclass==='plus'?price*0.07:0;
+  $('class-info').innerHTML=`
+    <div style="border:1px solid ${d.border};background:${d.bg};border-radius:9px;padding:12px;font-size:.82em;line-height:1.6">
+      <div style="font-weight:700;color:${d.colour};margin-bottom:6px">${d.title}</div>
+      <div><strong>Location:</strong> ${d.location}</div>
+      <div><strong>MOP:</strong> ${d.mop}</div>
+      <div><strong>Rental:</strong> ${d.rental}</div>
+      <div><strong>Resale buyer restrictions:</strong> ${d.resale}</div>
+      <div><strong>Subsidy clawback:</strong> ${d.clawback}${!isStd&&clawAmt>0?` At purchase price, this equals approximately <strong>${fmt(clawAmt)}</strong> (actual clawback is based on future resale price).`:''}</div>
+      <div style="margin-top:5px;color:#6b7280">${d.extra}</div>
+    </div>`;
+}
+
+// ─── ELIGIBILITY ──────────────────────────────────────────────────
+function computeElig(scheme,age,coage,cship,ft,ftype,estate,income,loan,tenure,prev,bclass,emp1,emp2,hasCoapp,ownerType,empMonths,isEO,effectiveOwnerIncome,iwaa,reducedLTV,isCTU){
+  const isDIA=emp1==='student'||(hasCoapp&&emp2==='student');
+  const isSelf=emp1==='self_emp'||(hasCoapp&&emp2==='self_emp');
+  const isSPR=cship==='sc_spr'&&hasCoapp;
+  const ageAtMaturity=iwaa+tenure;
+  const iwaaLabel=hasCoapp&&ownerType!=='owner_eo'?`IWAA ${iwaa.toFixed(1)} yrs`:`age ${Math.round(iwaa)} yrs`;
+  const checks=[];
+  const minAge=scheme==='couple'||scheme==='orphan'?21:35;
+  checks.push({ok:age>=minAge, label:`Applicant age ≥ ${minAge}`, note:age<minAge?`Age ${age} does not meet minimum.`:''});
+  if(scheme!=='single') checks.push({ok:coage>=21, label:'Co-applicant age ≥ 21', note:coage<21?'Co-applicant under 21.':''});
+
+  checks.push({ok:true, label:'At least one Singapore Citizen', note:''});
+
+  // Income ceiling
+  const cap=ftype==='3gen'?21000:14000;
+  const singleCap=ftype==='2rm'&&(scheme==='single'||scheme==='joint')?7000:14000;
+  const effCap=(scheme==='single'||scheme==='joint')?singleCap:cap;
+  checks.push({ok:income<=effCap, label:`Income ≤ ${fmt(effCap)}/month`, note:income>effCap?`Income $${income.toLocaleString()} exceeds ceiling for BTO eligibility.`:''});
+
+  // Singles restrictions
+  if(scheme==='single'||scheme==='joint'){
+    checks.push({ok:ftype==='2rm', label:'Singles: 2-Room Flexi only', note:ftype!=='2rm'?'Singles may only apply for 2-Room Flexi flats.':''});
+    // From 2H2024: singles can buy 2-Room Flexi in Standard, Plus AND Prime — estate restriction removed
+    checks.push({ok:true, label:'Singles: all BTO locations eligible (Standard, Plus, Prime)', note:'From 2H2024, the non-mature estate restriction was removed. Singles can buy 2-Room Flexi in any BTO classification.'});
+  }
+
+  // Second-timers
+  if(ft==='neither') checks.push({ok:false, warn:true, label:'Both applicants are second-timers', note:'Only 5% of BTO supply is allocated to second-timers. Chances are very low — consider the resale market or Fresh Start Housing Scheme.'});
+
+  // HDB loan income ceiling
+  if(loan==='hdb' && income>14000) checks.push({ok:false, warn:true, label:'HDB loan: income ≤ $14,000 required', note:`Income $${income.toLocaleString()} exceeds HDB loan ceiling.`});
+
+  // Age + tenure (uses IWAA for joint borrowers)
+  if(loan==='hdb' && ageAtMaturity>65){
+    const maxT=Math.max(5,Math.floor(65-iwaa));
+    checks.push({ok:false, warn:true, label:`HDB loan: ${iwaaLabel} + ${tenure} yrs = ${ageAtMaturity.toFixed(0)} (exceeds 65)`, note:`Reduce tenure to ${maxT} yrs so the loan is repaid before age 65.`});
+  }
+  if(loan==='bank' && reducedLTV){
+    const reason=ageAtMaturity>65?`${iwaaLabel} + tenure ${tenure} yrs = ${ageAtMaturity.toFixed(0)} > 65`:`Tenure ${tenure} yrs exceeds 25-yr HDB cap`;
+    checks.push({ok:false, warn:true, label:`Bank loan: reduced LTV 55% — ${reason}`, note:`Min cash downpayment rises from 5% to 10%. Reduce tenure to ≤ ${Math.min(25,Math.floor(65-iwaa))} yrs to restore standard 75% LTV.`});
+  }
+
+  // Outstanding loan warning
+  if(prev) checks.push({ok:false, warn:true, label:'Outstanding housing loan detected', note:`HDB loan likely unavailable. Bank loan LTV: ${reducedLTV?'25%':'45%'}${reducedLTV?' (further reduced — long tenure / age)':''}. Consult HDB and your bank.`});
+
+  // ── Employment checks ──
+  if(isSelf){
+    const who=emp1==='self_emp'&&emp2==='self_emp'?'Both applicants are':emp1==='self_emp'?'Main applicant is':'Co-applicant is';
+    checks.push({ok:false,warn:true,label:'Self-employed: income from IRAS NOA (not current earnings)',
+      note:`${who} self-employed. HDB uses prior year NOA income ÷ 12. No employer CPF — OA receives no automatic top-up. Business must be ACRA-registered and active ≥ 12 months.`});
+  }
+  if(isDIA){
+    checks.push({ok:false,warn:true,label:'DIA: income and EHG assessed at key collection (~3–5 yrs)',note:'Figures shown are estimates. Actual EHG and loan quantum confirmed via HFE letter nearer to key collection.'});
+  }
+  if(empMonths<12&&!isDIA){
+    checks.push({ok:false,warn:true,label:`Employment gap: only ${empMonths}/12 months employed`,note:'Gap months count as $0. Effective income and EHG are reduced. Consider delaying HFE application until you have 12 full months of continuous employment.'});
+  }
+
+  // ── Owner + Essential Occupier checks ──
+  if(isEO){
+    checks.push({ok:false,warn:true,label:'Owner+EO: loan based on owner\'s income only',note:'Essential occupier\'s income is NOT used for HDB loan quantum or MSR. Only owner\'s CPF can fund this flat.'});
+    checks.push({ok:false,warn:true,label:'Owner+EO: EO has no legal ownership rights',note:'Especially important in divorce/separation scenarios. EO cannot claim the property even with significant cash contributions.'});
+  }
+
+  // ── Plus / Prime specific checks ──
+  if(bclass==='plus'||bclass==='prime'){
+    const mop=10, clawPct=bclass==='prime'?9:'6–8';
+    checks.push({ok:false, warn:true,
+      label:`${bclass==='prime'?'Prime':'Plus'} flat: 10-year MOP (not 5 years)`,
+      note:`You must occupy the flat for 10 consecutive years before selling on the open market.`});
+    checks.push({ok:false, warn:true,
+      label:'No whole-unit rental — ever',
+      note:'You may rent out spare rooms (in 3-room or larger), but cannot rent out the entire flat even after MOP.'});
+    checks.push({ok:false, warn:true,
+      label:`Subsidy clawback: ${clawPct}% of future resale price`,
+      note:`When you sell, HDB will recover ${clawPct}% of the resale price. This reduces your net sale proceeds.`});
+    checks.push({ok:false, warn:true,
+      label:'Resale buyers restricted to SC, income ≤ $14,000',
+      note:'This narrows the pool of future buyers, which may affect resale liquidity and price.'});
+  }
+
+  // ── Resale-specific checks ──
+  // These are passed via the effectiveOwnerIncome param slot for now — we read from DOM
+  const isResaleMode=document.getElementById('g-mode')?.querySelector('.tgl.on')?.dataset?.v==='resale';
+  if(isResaleMode){
+    // No income ceiling for resale eligibility (grants have their own)
+    checks.push({ok:true, label:'No income ceiling for resale eligibility', note:'Unlike BTO, any income level can buy a resale flat. However, EHG requires income ≤ $9,000/month and Family Grant requires ≤ $14,000/month.'});
+    // CPF usage restriction for old flats
+    const leaseYrs=parseInt(document.getElementById('lease-yrs')?.value||'80');
+    const cpfAge=Math.round(typeof iwaa==='number'?iwaa:age);
+    if(leaseYrs+cpfAge<95){
+      checks.push({ok:false,warn:true,
+        label:`CPF usage restricted — remaining lease (${leaseYrs} yrs) + IWAA (${cpfAge} yrs) = ${leaseYrs+cpfAge} < 95`,
+        note:`CPF OA can only be used for property costs proportional to the years the flat covers you until age 95. The shortfall must be paid in cash. Consider a flat with a longer remaining lease.`});
+    }
+  }
+
+  // ── SC + SPR / Citizen Top-Up checks ──
+  if(isSPR){
+    checks.push({ok:false, warn:true,
+      label:'SC+SPR: flat price is $10,000 higher than SC+SC',
+      note:'HDB charges a $10,000 premium to SC+SPR households vs an equivalent SC+SC household buying the same flat.'});
+    if(isCTU){
+      checks.push({ok:false, warn:false,
+        label:'Citizen Top-Up: $10,000 CPF grant planned',
+        note:'When the SPR obtains Singapore Citizenship (or an SC child is born), apply to HDB within 6 months. The $10,000 is credited to CPF OA of eligible core members — effectively recovering the SC+SPR premium. No deadline tied to key collection; can be anytime during ownership.'});
+    } else {
+      checks.push({ok:false, warn:true,
+        label:'Citizen Top-Up available if SPR becomes SC (or SC child born)',
+        note:'If the SPR partner ever obtains SC, apply within 6 months for a $10,000 CPF OA grant. This recovers the SC+SPR flat premium. Toggle "Yes — planning to convert" above to model this in your plan.'});
+    }
+  }
+
+  return checks;
+}
+
+function renderElig(checks){
+  $('elig-panel').innerHTML=checks.map(c=>`
+    <div class="elig-row">
+      <div class="elig-icon ${c.ok?'pass':c.warn?'warn':'fail'}">${c.ok?'✓':c.warn?'!':'✗'}</div>
+      <div>
+        <div class="elig-text">${c.label}</div>
+        ${c.note?`<div class="elig-note">${c.note}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ─── EHG MSG ──────────────────────────────────────────────────────
+function renderEHGMsg(ehg,effectiveIncome,actualIncome,isSingle,ceil,ft,isDIA,isSelf,empMonths){
+  let cls,msg;
+  if(ft==='neither'){
+    cls='warn'; msg='<strong>No EHG</strong> — both applicants are second-timers. EHG is only for first-timers.';
+  } else if(effectiveIncome>ceil){
+    cls='warn'; msg=`<strong>No EHG</strong> — effective income ${fmt(effectiveIncome)}/month exceeds ${fmt(ceil)}/month ceiling for ${isSingle?'singles':'families'}.`;
+  } else if(isDIA){
+    cls='info'; msg=`<strong>DIA: Estimated EHG ~${fmt(ehg)}</strong> based on expected income of ${fmt(actualIncome)}/month at key collection.
+      Actual EHG assessed nearer to key collection (~3–5 years from now). Your real grant may be higher or lower depending on income at that time.`;
+  } else if(isSelf&&ehg>0){
+    cls='ok'; msg=`<strong>Estimated EHG: ${fmt(ehg)}</strong> based on ${fmt(effectiveIncome)}/month (IRAS NOA income). If your actual current income differs from your NOA income, the real EHG may differ. Confirm via HFE letter.`;
+  } else if(empMonths<12&&ehg>0){
+    cls='ok'; msg=`<strong>Estimated EHG: ${fmt(ehg)}</strong> based on effective income of ${fmt(effectiveIncome)}/month (${empMonths}/12 months at ${fmt(actualIncome)}/month).
+      If you apply after completing 12 months of employment at ${fmt(actualIncome)}/month, your EHG would be <strong>${fmt(ehgLookup(actualIncome,isSingle))}</strong>.`;
+  } else if(ehg>0){
+    cls='ok'; msg=`<strong>Estimated EHG: ${fmt(ehg)}</strong> based on ${fmt(effectiveIncome)}/month household income. Requires ≥ 12 months continuous employment. Credited to CPF OA at lease signing.`;
+  } else {
+    cls='info'; msg='<strong>EHG: $0</strong> — income at boundary or not eligible. Verify with HDB via your HFE letter.';
+  }
+  $('ehg-msg').innerHTML=`<div class="alert ${cls}" style="margin-top:4px">${msg}</div>`;
+}
+
+// ─── IWAA DISPLAY ────────────────────────────────────────────────
+function renderIWAA(iwaa,ageAtMaturity,reducedLTV,loan,tenure,hasCoapp,isEO,age,coage,inc1,inc2){
+  if(loan==='cash'){$('r-iwaa').innerHTML=''; return;}
+  const joint=hasCoapp&&!isEO;
+  const isHDB=loan==='hdb';
+  let calcNote='';
+  if(joint&&inc1+inc2>0){
+    calcNote=`<div style="font-size:.75em;color:#9ca3af;margin-top:3px">(${age}×${fmt(inc1)} + ${coage}×${fmt(inc2)}) ÷ ${fmt(inc1+inc2)}</div>`;
+  }
+  const maturityOk=ageAtMaturity<=65;
+  const tenureOk=tenure<=25;
+  const cls=(!maturityOk||(loan==='bank'&&!tenureOk))?'amber':'';
+  $('r-iwaa').innerHTML=`
+    <div style="margin-top:10px;padding:11px 13px;background:#f8faff;border-radius:9px;border-left:4px solid ${reducedLTV?'#f59e0b':'#10b981'}">
+      <div style="font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:4px">
+        ${joint?'IWAA (Income-Weighted Age)':'Borrower Age'}
+      </div>
+      <div style="font-size:1.15em;font-weight:800;color:#0f2d52">${iwaa.toFixed(1)} yrs</div>
+      ${calcNote}
+      <div style="font-size:.78em;margin-top:6px;color:${maturityOk?'#374151':'#b45309'}">
+        Age at maturity: <strong>${ageAtMaturity.toFixed(0)} yrs</strong> (${iwaa.toFixed(1)} + ${tenure} yrs) ${maturityOk?'≤ 65 ✓':'> 65 ⚠'}
+      </div>
+      ${isHDB?'':`<div style="font-size:.78em;margin-top:3px;color:${tenureOk?'#374151':'#b45309'}">Tenure: <strong>${tenure} yrs</strong> ${tenureOk?'≤ 25 ✓':'> 25 ⚠'}</div>`}
+      ${reducedLTV?`<div style="font-size:.78em;margin-top:6px;color:#b45309;font-weight:700">Reduced LTV applies → 55% LTV, 10% cash min</div>`:''}
+    </div>`;
+}
+
+// ─── RESALE GRANT MESSAGE ─────────────────────────────────────────
+function renderResaleGrantMsg(ehg,familyGrant,singlesGrant,phgAmt,effectiveIncome,isSingle,ft,cship,prox,ftype){
+  const parts=[];
+  if(ehg>0) parts.push(`EHG: <strong>${fmt(ehg)}</strong> (income-based, same as BTO)`);
+  else parts.push(`EHG: not eligible (income above ceiling or second-timer)`);
+
+  if(familyGrant>0) parts.push(`CPF Housing Grant (Families): <strong>${fmt(familyGrant)}</strong>${cship==='sc_spr'?' — SC+SPR rate;':''} ${ftype==='5rm'||ftype==='3gen'?'5-room rate':'2–4 room rate'}`);
+  else if(!isSingle && ft!=='neither') parts.push(`CPF Housing Grant (Families): not eligible (income > $14,000 or second-timer)`);
+
+  if(singlesGrant>0) parts.push(`CPF Housing Grant (Singles): <strong>${fmt(singlesGrant)}</strong>`);
+
+  if(phgAmt>0) parts.push(`Proximity Housing Grant (PHG): <strong>${fmt(phgAmt)}</strong> (living ${prox==='with'?'together with':'within 4 km of'} parents/child) — no income ceiling`);
+  else if(prox!=='no') parts.push(`PHG: ${phgAmt===0?'not available for SC+Foreigner':fmt(phgAmt)}`);
+
+  const total=ehg+familyGrant+singlesGrant+phgAmt;
+  const cls=total>0?'ok':ft==='neither'?'warn':'info';
+  $('ehg-msg').innerHTML=`<div class="alert ${cls}" style="margin-top:4px;font-size:.83em">
+    <strong>Total Grants: ${fmt(total)}</strong><br>
+    ${parts.map(p=>`• ${p}`).join('<br>')}
+  </div>`;
+}
+
+// ─── MSR / TDSR ───────────────────────────────────────────────────
+function renderMSR(monthly,income,loan,isEO){
+  if(loan==='cash'||income===0){$('r-msr').innerHTML=''; return;}
+  const msrPct=monthly/income*100;
+  const msrOK=msrPct<=30;
+  const barW=Math.min(100,msrPct/30*100);
+  const col=msrOK?'green':msrPct<=45?'amber':'red';
+  const incomeNote=isEO?' (owner\'s income only)':'';
+  $('r-msr').innerHTML=`
+    <div style="margin-top:10px">
+      <div class="pbar-labels">
+        <span>MSR — max 30%${incomeNote}</span>
+        <span style="color:${msrOK?'#10b981':'#ef4444'}">${msrPct.toFixed(1)}%</span>
+      </div>
+      <div class="pbar"><div class="pbar-fill ${col}" style="width:${barW}%"></div></div>
+      <div class="helper" style="margin-top:4px">${msrOK?'Within MSR limit. ✓':'Exceeds 30% MSR limit — may not qualify. Lower flat price, extend tenure, or increase owner\'s income.'}</div>
+    </div>`;
+}
+
+// ─── CASH CHECK ───────────────────────────────────────────────────
+function renderCash(cashSav, cashNeeded, dpCash, sd, opt, lg){
+  const ok=cashSav>=cashNeeded;
+  const cls=ok?'ok':'warn';
+  $('r-cash').innerHTML=`
+    <div class="alert ${cls}" style="margin-top:10px;font-size:.82em">
+      <strong>Upfront cash needed: ${fmt(cashNeeded)}</strong><br>
+      Downpayment: ${fmt(dpCash)} + BSD: ${fmt(sd)} + Fees: ${fmt(opt+lg)}<br>
+      Your savings: ${fmt(cashSav)} — ${ok?'Sufficient ✓':'<strong>Shortfall: '+fmt(cashNeeded-cashSav)+'</strong>'}
+    </div>`;
+}
+
+// ─── COSTS TAB ────────────────────────────────────────────────────
+function renderCosts(price,ehg,dpCPF,dpCash,loan,sd,opt,survey,lg,app,hps,reno,loanType,ftype,bclass,cship,isCTU,isResale,cov,familyGrant,phgAmt,singlesGrant,ehgOnly){
+  const isPlus=bclass==='plus', isPrime=bclass==='prime';
+  const clawPct=isPrime?0.09:isPlus?0.07:0; // 7% = midpoint of 6–8% for Plus
+  const clawAmt=price*clawPct;
+
+  const rows=[
+    {item:'Flat Purchase Price', amt:price, when:'Funded via downpayment + loan', by:'—'},
+    {item:'Enhanced CPF Housing Grant (EHG)', amt:-ehg, when:'At Agreement for Lease signing', by:'HDB (credit to CPF OA)', neg:true},
+    {item:'Application Fee', amt:10, when:'At BTO application', by:'Cash'},
+    {item:'Option Fee (deductible from DP)', amt:opt, when:'At flat booking', by:'Cash'},
+    {item:'Downpayment — CPF OA portion', amt:dpCPF, when:'At Agreement for Lease', by:'CPF OA (incl. grant)'},
+    {item:'Downpayment — Cash portion', amt:dpCash, when:'At Agreement for Lease', by:'Cash'},
+    {item:"Buyer's Stamp Duty (BSD)", amt:sd, when:'Within 14 days of AoL signing', by:'Cash / CPF OA'},
+    {item:'Legal / Conveyancing Fees (est.)', amt:lg, when:'At Agreement for Lease', by:'Cash / CPF OA'},
+    {item:'Survey Fee (incl. 9% GST, est.)', amt:survey, when:'At key collection', by:'Cash / CPF OA'},
+    {item:'HDB Loan', amt:loan, when:'Disbursed during construction', by:'HDB (repaid monthly)'},
+    {item:'Home Protection Scheme — annual est.', amt:hps, when:'Annually (if using CPF for HDB loan)', by:'CPF / Cash', skip:loanType!=='hdb'},
+    {item:'Fire Insurance — annual est.', amt:loanType==='hdb'?90:0, when:'Annually', by:'Cash', skip:loanType!=='hdb'},
+    {item:'Renovation Budget (est.)', amt:reno, when:'After key collection', by:'Cash / Renovation Loan'},
+    // Plus / Prime clawback — shown as a future cost
+    {item:`⚠ Subsidy Clawback on Resale (${isPrime?'9%':'est. 7% — midpoint of 6–8%'} of resale price)`,
+     amt:clawAmt, when:'When you sell the flat (future cost)', by:'Deducted from sale proceeds',
+     skip:!(isPlus||isPrime), clawback:true},
+    // SC+SPR premium and Citizen Top-Up (BTO only — resale uses Family Grant difference)
+    {item:'SC+SPR flat premium (vs SC+SC household for same flat)', amt:10000,
+     when:'Reflected in flat purchase price', by:'Priced into flat cost',
+     skip:cship!=='sc_spr'||isResale, spr:true},
+    {item:'✓ Citizen Top-Up — CPF grant when SPR obtains SC', amt:-10000,
+     when:'After SPR becomes SC (apply within 6 months)', by:'HDB → CPF OA',
+     neg:true, skip:!isCTU||isResale},
+    // Resale-specific rows
+    {item:'Cash Over Valuation (COV)', amt:cov||0,
+     when:'At Option to Purchase exercise', by:'Cash only (cannot use CPF)', skip:!isResale||!cov},
+    {item:'CPF Housing Grant (Families)', amt:familyGrant||0,
+     when:'At resale completion', by:'HDB → CPF OA', neg:true, skip:!isResale||!(familyGrant>0)},
+    {item:'CPF Housing Grant (Singles)', amt:singlesGrant||0,
+     when:'At resale completion', by:'HDB → CPF OA', neg:true, skip:!isResale||!(singlesGrant>0)},
+    {item:'Proximity Housing Grant (PHG)', amt:phgAmt||0,
+     when:'At resale completion', by:'HDB → CPF OA', neg:true, skip:!isResale||!(phgAmt>0)},
+  ];
+
+  let body='';
+  for(const r of rows){
+    if(r.skip||r.amt===0) continue;
+    let disp;
+    if(r.neg) disp=`<span style="color:#10b981">-${fmt(-r.amt)}</span>`;
+    else if(r.clawback) disp=`<span style="color:#b45309">${fmt(r.amt)}</span>`;
+    else if(r.spr) disp=`<span style="color:#b45309">${fmt(r.amt)}</span>`;
+    else disp=fmt(r.amt);
+    const rowStyle=r.clawback?' style="background:#fffbeb;"':r.spr?' style="background:#fffbeb;"':'';
+    body+=`<tr${rowStyle}><td>${r.item}</td><td><strong>${disp}</strong></td><td>${r.when}</td><td>${r.by}</td></tr>`;
+  }
+
+  const totalExReno=price-ehg+sd+lg+survey+(isResale?0:10);
+  const upfront=(isResale?0:10)+opt+dpCash+sd+lg+(cov||0);
+  $('cost-body').innerHTML=body;
+
+  let footNote=`Est. cash upfront: ${fmt(upfront)}`;
+  if(isPlus||isPrime) footNote+=` | Future clawback (at purchase price): ${fmt(clawAmt)}`;
+  $('cost-foot').innerHTML=`
+    <tr><td>Total Cost (excl. renovation &amp; monthly loan)</td><td>${fmt(totalExReno)}</td><td colspan="2">${footNote}</td></tr>`;
+
+  // Update footnote
+  const baseNote='Stamp duty = Buyer\'s Stamp Duty (BSD). Legal fees are estimates. Renovation budget is a planning guideline. ABSD applies only for non-first-property purchases. Option fee is deductible from the downpayment.';
+  const clawNote=(isPlus||isPrime)?` Subsidy clawback is based on the actual <em>resale price</em> (not purchase price) — the ${fmt(clawAmt)} shown uses purchase price as a conservative estimate.`:'';
+  document.querySelector('#tp-costs .helper').innerHTML=baseNote+clawNote;
+}
+
+// ─── PAYMENT SCHEDULE ────────────────────────────────────────────
+function renderPay(price,dpTotal,dpSign,dpKey,loanAmt,monthly,ehg,dpCPF,mandCash,sd,lg,opt,loanType,sds,tenure,rate,cpfForHDB,isDIA,isSelf,isResale,cov,totalGrant){
+  if(loanType==='cash'){
+    $('pay-content').innerHTML=`<div class="alert info">Full cash purchase — full amount payable at completion/key collection. No loan repayments.</div>`;
+    return;
+  }
+  if(isResale){
+    const dpCash=dpTotal-dpCPF;
+    $('pay-content').innerHTML=`
+      <table>
+        <thead><tr><th>Stage</th><th>Item</th><th>Amount</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2"><strong>Preparation</strong><br><span style="font-size:.8em;color:#9ca3af">(~1–2 weeks)</span></td><td>HFE Letter application</td><td>Free</td><td>SingPass</td></tr>
+          <tr><td>Source flat &amp; negotiate price</td><td>—</td><td>—</td></tr>
+          <tr class="hl"><td rowspan="2"><strong>Option to Purchase</strong><br><span style="font-size:.8em;color:#9ca3af">(21-day decision window)</span></td><td>Option fee (to seller, part of DP)</td><td>${fmt(opt)}</td><td>Cash</td></tr>
+          <tr class="hl"><td>Cash Over Valuation (if any)</td><td>${cov>0?fmt(cov):'$0'}</td><td>Cash only</td></tr>
+          <tr class="hl"><td rowspan="3"><strong>Exercise OTP &amp; Submit</strong><br><span style="font-size:.8em;color:#9ca3af">(within 21 days of OTP)</span></td><td>Downpayment balance</td><td>${fmt(dpCash)}</td><td>CPF OA + Cash</td></tr>
+          <tr class="hl"><td>Buyer's Stamp Duty</td><td>${fmt(sd)}</td><td>Cash / CPF OA</td></tr>
+          <tr class="hl"><td>Legal / conveyancing fees</td><td>~${fmt(lg)}</td><td>Cash / CPF OA</td></tr>
+          <tr><td><strong>HDB Processing</strong><br><span style="font-size:.8em;color:#9ca3af">(~8–10 weeks)</span></td><td>Grants credited to CPF OA</td><td>${totalGrant>0?fmt(totalGrant):'—'}</td><td>HDB → CPF OA</td></tr>
+          <tr><td><strong>Completion &amp; Keys</strong></td><td>Survey fee (if applicable)</td><td>~${fmt(Math.round(200))}</td><td>Cash / CPF OA</td></tr>
+          <tr><td><strong>Monthly Repayment</strong><br><span style="font-size:.8em;color:#9ca3af">(${tenure} yrs)</span></td><td>Loan @ ${loanType==='hdb'?2.6:rate}% p.a.</td><td>${fmt(monthly)}/month</td><td>CPF OA + Cash</td></tr>
+        </tbody>
+      </table>
+      <div class="alert ok" style="margin-top:12px;font-size:.83em">
+        <strong>Resale timeline: ~3–4 months from OTP to keys.</strong> You can move in on completion day — no waiting for construction. Arrange your mortgage pre-approval and CPF withdrawal before exercising the OTP.
+      </div>`;
+    return;
+  }
+  const ftype=$('ftype').value;
+  const isHDB=loanType==='hdb';
+  const cpfAfter=cpfForHDB+ehg;
+  const stageLabel=isDIA?'Agreement for Lease <span class="tl-badge" style="font-size:.72em">DIA: 2.5%</span>':isHDB&&sds?'Agreement for Lease <span class="tl-badge" style="font-size:.72em">SDS: 5%</span>':'Agreement for Lease';
+  const dpKeyRow=(isDIA||isHDB&&sds||!isHDB)&&dpKey>0?
+    `<tr class="hl"><td><strong>Key Collection</strong>${isDIA?' (DIA final DP)':isHDB&&sds?' (SDS balance)':''}</td><td>Remaining downpayment</td><td>${fmt(dpKey)}</td><td>CPF OA + Cash</td></tr>`:'';
+  const ehgRow=isDIA?`<tr><td></td><td>EHG grant assessed & credited (DIA)</td><td>~${fmt(ehg)} (est.)</td><td>HDB → CPF OA</td></tr>`:'';
+  const selfNote=isSelf?`<div class="alert warn" style="margin-top:10px;font-size:.82em"><strong>Self-employed:</strong> Ensure your IRAS NOA income is filed and up to date before HFE application. HDB uses NOA income, not your actual current earnings.</div>`:'';
+  const diaNote=isDIA?`<div class="alert ok" style="margin-top:10px;font-size:.82em"><strong>DIA advantage:</strong> You only need ${fmt(dpSign)} (2.5%) at Agreement for Lease signing — the lowest possible upfront commitment. Income, EHG, and loan quantum are fully assessed near key collection when your career is more established.</div>`:'';
+  $('pay-content').innerHTML=`
+    <table>
+      <thead><tr><th>Stage</th><th>Item</th><th>Amount</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2"><strong>Preparation</strong></td><td>HFE Letter application${isDIA?' (income deferred)':''}</td><td>Free</td><td>SingPass</td></tr>
+        <tr><td>Application fee</td><td>$10</td><td>Cash</td></tr>
+        <tr><td rowspan="2"><strong>Flat Booking</strong></td><td>Option fee</td><td>${fmt(opt)}</td><td>Cash</td></tr>
+        <tr><td>Applied to downpayment later</td><td>—</td><td>—</td></tr>
+        <tr class="hl"><td rowspan="3"><strong>${stageLabel}</strong></td><td>Downpayment</td><td>${fmt(dpSign)}</td><td>CPF OA + Cash</td></tr>
+        <tr class="hl"><td>Buyer's Stamp Duty</td><td>${fmt(sd)}</td><td>Cash / CPF</td></tr>
+        <tr class="hl"><td>Legal / conveyancing fees</td><td>~${fmt(lg)}</td><td>Cash / CPF</td></tr>
+        <tr><td><strong>Construction Period</strong><br><span style="font-size:.8em;color:#9ca3af">(3–5 years)</span></td><td>Loan disbursed in progress payments</td><td>${fmt(loanAmt)}</td><td>${isHDB?'HDB Concessionary Loan':'Bank Loan'}</td></tr>
+        ${ehgRow}
+        ${dpKeyRow}
+        <tr><td><strong>Key Collection</strong></td><td>Survey fee</td><td>~$${Math.round(ftype==='2rm'?164:ftype==='3rm'?232:ftype==='4rm'?300:354).toLocaleString()}</td><td>Cash / CPF</td></tr>
+        <tr><td><strong>Monthly Repayment</strong><br><span style="font-size:.8em;color:#9ca3af">(${tenure} yrs)</span></td><td>Loan @ ${isHDB?2.6:N('brate')}% p.a.</td><td>${fmt(monthly)}/month</td><td>CPF OA + Cash</td></tr>
+      </tbody>
+    </table>
+    <div class="alert info" style="margin-top:12px;font-size:.83em">
+      <strong>CPF OA available after grant: ${fmt(cpfAfter)}</strong> — monthly CPF contributions during the construction period (3–5 years) continue to grow your OA, reducing how much cash you need for monthly instalments.
+    </div>
+    ${selfNote}${diaNote}`;
+}
+
+// ─── TIMELINE ────────────────────────────────────────────────────
+function renderTimeline(bclass,isResale){
+  if(isResale){
+    const steps=[
+      {title:'Get HDB Flat Eligibility (HFE) Letter',
+       desc:'Apply via the HDB Flat Portal with Singpass. The HFE letter confirms your eligibility to buy a resale flat and your maximum HDB loan amount. Valid for 9 months.',
+       dur:'~1–2 weeks processing'},
+      {title:'Source and View Flats',
+       desc:'Browse HDB resale listings (HDB Flat Portal, PropertyGuru, 99.co). Arrange viewings, check remaining lease, proximity to amenities, and condition. Negotiate directly with the seller.',
+       dur:'Weeks to months (variable)'},
+      {title:'Grant Option to Purchase (OTP)',
+       desc:'Seller grants you an OTP. You pay the option fee (negotiable, typically ~1% of price). You have 21 calendar days to decide whether to exercise the OTP.',
+       dur:'Up to 21 days to decide'},
+      {title:'Exercise OTP',
+       desc:'You exercise the OTP by paying the remaining option exercise fee (total downpayment deposit = exercise fee + option fee). Both parties jointly submit the resale application to HDB within 7 days of exercising.',
+       dur:'Within 21 days of OTP; submit resale app within 7 days'},
+      {title:'HDB Processing & Approval',
+       desc:'HDB reviews the application, verifies eligibility, and computes grants. Both buyer and seller receive an appointment date for the resale completion. During this period, arrange your mortgage (if using bank loan) and CPF withdrawal.',
+       dur:'~8–10 weeks after submission'},
+      {title:'Resale Completion',
+       desc:'Attend the HDB appointment. Pay remaining amounts (downpayment balance, BSD, legal fees). CPF grants are credited. Seller receives sale proceeds. Keys are handed over — you can move in immediately.',
+       dur:'On appointment day — immediate occupancy'},
+      {title:'Minimum Occupation Period (MOP)',
+       desc:`You must occupy the flat for <strong>5 consecutive years</strong> before selling on the open resale market or renting out the entire flat. No MOP for Plus/Prime labels on resale (those labels apply to future BTO launches, not existing resale flats).`,
+       dur:'5 years from key collection'},
+    ];
+    $('tl-content').innerHTML=steps.map(s=>`
+      <div class="tl-item">
+        <h4>${s.title}</h4>
+        <p>${s.desc}</p>
+        <span class="tl-badge">${s.dur}</span>
+      </div>`).join('');
+    return;
+  }
+  const mopYrs=(bclass==='plus'||bclass==='prime')?10:5;
+  const isPP=bclass==='plus'||bclass==='prime';
+  const steps=[
+    {title:'Apply for HDB Flat Eligibility (HFE) Letter',
+     desc:'Log in via HDB Flat Portal with Singpass. The letter confirms your eligibility and maximum HDB loan amount. Valid for 9 months — apply before your target BTO launch.',
+     dur:'~1–2 weeks processing'},
+    {title:'Monitor BTO Launches',
+     desc:'HDB typically launches BTO exercises in February, June, and October each year. Classify projects as Standard, Plus, or Prime — research locations, restrictions, and prices before applying.',
+     dur:'Launches ~3× per year'},
+    {title:'Submit BTO Application',
+     desc:'Apply online during the 1-week application window. Pay the non-refundable $10 application fee. You may apply for one project per exercise.',
+     dur:'Application window: ~1 week'},
+    {title:'Await Ballot Results & Queue Number',
+     desc:'HDB randomly assigns queue numbers. First-timers receive 2 ballot chances (advantage). Priority scheme applicants get additional ballot chances. Results in ~6 weeks.',
+     dur:'~2–6 weeks after close'},
+    {title:'Flat Selection & Booking',
+     desc:'When your queue number is called, visit HDB Hub to select your unit. Pay the option fee ($500–$2,000) to secure it. Grant eligibility is assessed at this stage.',
+     dur:'Booking period: 4+ weeks'},
+    {title:'Sign Agreement for Lease (AoL)',
+     desc:'Pay the downpayment (or first half if using SDS), Buyer\'s Stamp Duty, and legal fees. EHG grant is credited to your CPF OA. Must be completed within 9 months of booking.',
+     dur:'Within 9 months of booking'},
+    {title:'Construction Period',
+     desc:'HDB disburses your loan in stages tied to construction milestones (foundation, framework, etc.). You receive progress updates. Use this time to plan renovation and save.',
+     dur:'3–5 years (varies)'},
+    {title:'Key Collection',
+     desc:`Pay the survey fee, fire insurance, and any remaining amounts. If on SDS, pay the second half of the downpayment. The ${mopYrs}-Year Minimum Occupation Period (MOP) starts now.`,
+     dur:'Upon TOP (Temporary Occupation Permit)'},
+    {title:`Minimum Occupation Period — ${mopYrs} Years`,
+     desc: isPP
+       ? `You must physically occupy the flat for <strong>${mopYrs} consecutive years</strong> before you can sell it on the open resale market. You may rent out spare rooms (3-room or larger), but <strong>cannot rent out the entire flat at any point</strong>, even after MOP. When you sell, HDB will recover ${bclass==='prime'?'9%':'6–8%'} of the resale price as a subsidy clawback.`
+       : `You must physically occupy the flat for <strong>5 consecutive years</strong> before selling on the open resale market or renting out the entire flat.`,
+     dur:`${mopYrs} years after key collection`},
+  ];
+  $('tl-content').innerHTML=steps.map(s=>`
+    <div class="tl-item">
+      <h4>${s.title}</h4>
+      <p>${s.desc}</p>
+      <span class="tl-badge">${s.dur}</span>
+    </div>`).join('');
+}
+
+// ─── PRIORITY SCHEMES ────────────────────────────────────────────
+function renderPrio(scheme,kids,prox,ft,ftype,estate,age,cship,isResale){
+  if(isResale){
+    const isSPR=cship==='sc_spr';
+    const is5rm=ftype==='5rm'||ftype==='3gen';
+    const isSingle=scheme==='single'||scheme==='joint';
+    const phgWith=30000, phgNear=20000; // Same for SC+SC and SC+SPR families
+    const fgAmt=isSingle?0:(isSPR?(is5rm?40000:70000):(is5rm?50000:80000));
+    const schemes=[
+      {name:'No Balloting — Direct Purchase',
+       desc:'Resale flats are bought directly from sellers on the open market. No ballot, no queue number — purchase whenever you find a suitable flat and negotiate with the seller.',
+       ok:true, why:'Resale gives full autonomy: you choose location, floor, and facing.'},
+      {name:'No Income Ceiling for Eligibility',
+       desc:'Unlike BTO, there is no household income ceiling to buy a resale HDB flat. However, CPF Housing Grants (EHG, Family Grant) have their own income ceilings.',
+       ok:true, why:'Suitable for higher-income households who want to buy HDB but exceed BTO income limits.'},
+      {name:'Proximity Housing Grant (PHG)',
+       desc:`Living with parents/child in same HDB block: ${fmt(phgWith)}. Living within 4 km: ${fmt(phgNear)}. No income ceiling. Exclusive to resale flat buyers.`,
+       ok:prox!=='no', why:prox==='no'?'Set proximity preference above to see your PHG amount.':
+         `Eligible — ${prox==='with'?`${fmt(phgWith)} (living together)`:` ${fmt(phgNear)} (within 4 km)`}`},
+      {name:`CPF Housing Grant (Families) — ${fmt(fgAmt)}`,
+       desc:`For first-timer families. SC+SC: ${fmt(is5rm?50000:80000)} (2–4rm), ${fmt(50000)} (5rm+). SC+SPR: ${fmt(is5rm?40000:70000)} (2–4rm), ${fmt(40000)} (5rm+). Income ceiling: $14,000/month.`,
+       ok:!isSingle&&ft!=='neither', why:isSingle?'Not applicable to singles.':ft==='neither'?'Both applicants are second-timers — Family Grant not available.':'Eligible — credited to CPF OA at completion.'},
+      {name:'Immediate Occupancy',
+       desc:'Move in as soon as the resale transaction completes — typically 3-4 months after the OTP is granted. No 3-5 year construction wait.',
+       ok:true, why:'Ideal if you need housing quickly — e.g., newly married, relocating.'},
+      {name:'Declining Lease',
+       desc:'Resale flats have a remaining lease less than 99 years. If lease + your age < 95, CPF usage for the purchase is prorated and may be restricted. Check carefully before buying an older flat.',
+       ok:false, warn:true, why:'Set the remaining lease in Section 3 to check CPF usage limits for your age.'},
+    ];
+    $('prio-content').innerHTML=schemes.map(s=>{
+      const badgeCls=s.ok?'yes':'no';
+      const badgeTxt=s.ok?'✓ Applicable':s.warn?'⚠ Watch out':'— Not Applicable';
+      return `<div class="scheme-card">
+        <h4>${s.name}</h4><p>${s.desc}</p>
+        <p style="font-size:.79em;color:#374151;margin-top:5px"><strong>Note:</strong> ${s.why}</p>
+        <span class="scheme-badge ${badgeCls}">${badgeTxt}</span>
+      </div>`;
+    }).join('');
+    return;
+  }
+  const isFT=ft!=='neither';
+  const notSingle=scheme==='couple'||scheme==='orphan';
+  const schemes=[
+    {
+      name:'Family &amp; Parenthood Priority Scheme (FPPS)',
+      desc:'Gives additional ballot chances to married couples or families with SC children aged ≤ 18. Largest priority benefit for eligible first-timers.',
+      ok:scheme==='couple'&&kids==='yes'&&isFT,
+      why:scheme!=='couple'?'Married couple/family scheme required.':kids!=='yes'?'Requires SC child(ren) aged ≤ 18.':!isFT?'At least one first-timer required.':'You qualify — indicates children aged ≤ 18.'
+    },
+    {
+      name:'Married Child Priority Scheme (MCPS)',
+      desc:'Up to 30% of BTO flat supply set aside for those applying to live with or within 4 km of parents or a married child.',
+      ok:notSingle&&prox!=='no',
+      why:!notSingle?'Requires couple or family scheme.':prox==='no'?'Must apply to live with or near parents/married child.':'Eligible — set \'Proximity\' above to confirm.'
+    },
+    {
+      name:'Multi-Generation Priority Scheme (MGPS)',
+      desc:'Parents and their married child apply together for flats in the same BTO development. Both households get additional ballot priority.',
+      ok:notSingle&&prox!=='no',
+      why:!notSingle?'Requires couple/family scheme.':prox==='no'?'Must apply together with parents/child.':'Eligible — coordinate application with family members.'
+    },
+    {
+      name:'Senior Priority Scheme (SPS)',
+      desc:'For applicants aged 55+. Priority allocation for 2-Room Flexi flats with shorter leases (15–45 yrs) in selected estates.',
+      ok:age>=55,
+      why:age<55?`Requires applicant age ≥ 55 (yours: ${age}).`:'Eligible — consider 2-Room Flexi short-lease options.'
+    },
+    {
+      name:'First-Timer Ballot Advantage',
+      desc:'First-timers get 2 ballot chances vs 1 for second-timers. 95% of BTO flat supply is reserved for first-timer families.',
+      ok:isFT,
+      why:!isFT?'Both applicants are second-timers — very limited 5% allocation.':'Eligible — you have 2 ballot chances per exercise.'
+    },
+    {
+      name:'Singles / Joint Singles Scheme',
+      desc:'Single SC citizens aged 35+ may apply for 2-Room Flexi flats (99-yr lease) in Standard, Plus, or Prime projects across all locations — the non-mature estate restriction was removed from 2H2024.',
+      ok:scheme==='single'||scheme==='joint',
+      why:(scheme==='single'||scheme==='joint')?'Eligible under your selected scheme.':'Not applicable to couple/family applicants.'
+    },
+    {
+      name:'Resale Levy (Second-Timer Buying New Flat)',
+      desc:'If you or your co-applicant previously bought a subsidised flat, a resale levy is payable when buying a second subsidised flat. Amounts: 2-room $15,000 · 3-room $30,000 · 4-room $40,000 · 5-room $45,000 · Executive $50,000 · EC $55,000. Levy cannot be paid using HDB loan — must use sale proceeds or cash.',
+      ok:ft==='both',
+      why:ft==='both'?'Both first-timers — no resale levy applies.':ft==='one'?'One applicant is a second-timer. A resale levy will apply based on the flat type previously owned.':'Both are second-timers. Resale levy applies — confirm amount based on previous flat type.'
+    },
+    {
+      name:'Fresh Start Housing Scheme (FSHS)',
+      desc:'Allows eligible second-timer families with young children (previously in ≤ 2-Room flat) to buy a new 2-Room Flexi flat with grant support.',
+      ok:ft==='neither'&&kids==='yes',
+      why:ft!=='neither'?'Only for second-timer families.':kids!=='yes'?'Requires young SC children.':'You may qualify — check with HDB for household income and previous flat conditions.'
+    },
+  ];
+  $('prio-content').innerHTML=schemes.map(s=>`
+    <div class="scheme-card">
+      <h4>${s.name}</h4>
+      <p>${s.desc}</p>
+      <p style="font-size:.79em;color:#374151;margin-top:5px"><strong>Your situation:</strong> ${s.why}</p>
+      <span class="scheme-badge ${s.ok?'yes':'no'}">${s.ok?'✓ Potentially Eligible':'— Not Applicable'}</span>
+    </div>`).join('');
+}
+
+// ─── EHG TABLE ───────────────────────────────────────────────────
+function renderEHGTab(isSingle, income){
+  const table=isSingle?EHG_SGL:EHG_FAM;
+  let prevMax=0, rows='';
+  for(const [max,g] of table){
+    const inRange=income>prevMax&&income<=max;
+    const lo=prevMax===0?0:prevMax+1;
+    const label=max===Infinity?`> $${prevMax.toLocaleString()}`:`$${lo.toLocaleString()} – $${max.toLocaleString()}`;
+    rows+=`<tr${inRange?' class="hl"':''}><td>${label}${inRange?' &larr; <em>your income</em>':''}</td><td>${g>0?fmt(g):'Not eligible'}</td></tr>`;
+    prevMax=max;
+  }
+  $('ehgtab-content').innerHTML=`
+    <p style="margin-bottom:10px;font-size:.88em">EHG amounts effective from <strong>20 August 2024</strong>. Requires ≥ 12 months continuous employment. Grant is credited to CPF OA (not cash). When you sell the flat, the grant (with accrued CPF interest) is returned to your CPF OA.</p>
+    <div class="btn-group" style="margin-bottom:12px">
+      <span class="tgl ${!isSingle?'on':''}" onclick="renderEHGTab(false,${income})">Family / Couple (income ≤ $9,000)</span>
+      <span class="tgl ${isSingle?'on':''}" onclick="renderEHGTab(true,${income})">Single (income ≤ $4,500)</span>
+    </div>
+    <table>
+      <thead><tr><th>Average Monthly ${isSingle?'':'Household '}Income</th><th>EHG (${isSingle?'First-timer Single':'First-timer Family'})</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="alert info" style="margin-top:12px">
+      <strong>Mixed couple (one FT + one ST):</strong> EHG(Singles) scale applies to the first-timer partner. HDB assesses using <strong>half the combined household income</strong> as the tier lookup — e.g. combined $4,000/mo → assessed at $2,000/mo → EHG $40,000. Effective ceiling: combined income ≤ $9,000/mo.<br>
+      <strong>Two singles applying jointly:</strong> Each eligible single may receive their own EHG(Singles) — up to $120,000 combined ($60,000 each).
+    </div>
+    <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:14px">
+      <div style="font-size:.82em;font-weight:700;color:#0f2d52;margin-bottom:8px">EC (Executive Condominium) — AHG for First-Timers</div>
+      <p style="font-size:.8em;color:#6b7280;margin-bottom:8px">EHG does not apply to ECs. EC buyers may receive the Additional CPF Housing Grant (AHG), subject to income ceiling of <strong>$16,000/month</strong>.</p>
+      <table>
+        <thead><tr><th>Household Income</th><th>SC + SC</th><th>SC + SPR</th></tr></thead>
+        <tbody>
+          <tr><td>≤ $10,000</td><td>$30,000</td><td>$20,000</td></tr>
+          <tr><td>$10,001 – $11,000</td><td>$20,000</td><td>$10,000</td></tr>
+          <tr><td>$11,001 – $12,000</td><td>$10,000</td><td>Nil</td></tr>
+          <tr><td>> $12,000</td><td>Nil</td><td>Nil</td></tr>
+        </tbody>
+      </table>
+      <p class="helper" style="margin-top:6px">SC+SPR couples can apply for an additional <strong>$10,000 Citizen Top-Up</strong> when the SPR spouse obtains SC (apply within 6 months). EC resale: eligible buyers are SC/SPR after 5 years from TOP; fully privatised with no restrictions after 10 years.</p>
+    </div>`;
+}
+
+// ─── TAB SWITCHING ────────────────────────────────────────────────
+function tab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+  $('tp-'+id).classList.add('on');
+  // Activate correct tab button
+  const map={costs:0,pay:1,tl:2,prio:3,ehgtab:4};
+  document.querySelectorAll('.tab')[map[id]].classList.add('on');
+}
+
+// ─── SAVINGS SPLIT ────────────────────────────────────────────────
+function renderSavingsSplit(totalSave, btoSave){
+  const el=$('savings-split');
+  if(!el) return;
+  if(totalSave<=0){el.innerHTML=''; return;}
+
+  const over=btoSave>totalSave;
+  const other=Math.max(0,totalSave-btoSave);
+  const btoPct=Math.min(100,totalSave>0?btoSave/totalSave*100:0);
+
+  if(over){
+    el.innerHTML=`<div class="alert warn" style="font-size:.82em;margin-top:6px">BTO allocation (${fmt(btoSave)}) exceeds total savings (${fmt(totalSave)}). Reduce the BTO amount or increase total savings.</div>`;
+    return;
+  }
+
+  el.innerHTML=`
+    <div style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;font-size:.82em;font-weight:600;margin-bottom:5px">
+        <span style="color:#1d4ed8">BTO: ${fmt(btoSave)}/mo (${btoPct.toFixed(0)}%)</span>
+        <span style="color:#6b7280">Other goals: ${fmt(other)}/mo</span>
+      </div>
+      <div style="height:9px;background:#e5e7eb;border-radius:5px;overflow:hidden">
+        <div style="height:100%;width:${btoPct}%;background:#1d4ed8;border-radius:5px;transition:width .3s"></div>
+      </div>
+      ${other<200?`<div class="alert warn" style="margin-top:8px;font-size:.8em">Only ${fmt(other)}/month remains for non-BTO goals. Consider keeping more buffer for emergencies and other priorities.</div>`:''}
+      ${other>=200?`<div class="alert ok" style="margin-top:8px;font-size:.8em">${fmt(other)}/month retained for other goals — investments, travel, insurance, etc. This balance can be redirected to BTO if you fall behind on milestones.</div>`:''}
+    </div>`;
+}
+
+// ─── RENOVATION BREAKDOWN ─────────────────────────────────────────
+const RENO_PRESETS = {
+  '2rm': {hacking:800,  tiling:2000, carpentry:3000,  painting:800,  electrical:1000, plumbing:1200, kitchen:2000, flooring:1500, aircon:1500, misc:1200},
+  '3rm': {hacking:1500, tiling:4500, carpentry:6000,  painting:1500, electrical:2000, plumbing:2000, kitchen:3500, flooring:3000, aircon:2500, misc:1500},
+  '4rm': {hacking:2500, tiling:7000, carpentry:11000, painting:2500, electrical:2500, plumbing:2500, kitchen:5500, flooring:4000, aircon:4000, misc:3000},
+  '5rm': {hacking:3000, tiling:10000,carpentry:14000, painting:3000, electrical:3500, plumbing:3500, kitchen:7000, flooring:6000, aircon:5500, misc:3500},
+  '3gen':{hacking:3000, tiling:10000,carpentry:14000, painting:3000, electrical:3500, plumbing:3500, kitchen:7000, flooring:6000, aircon:5500, misc:3500}
+};
+const RENO_CATS = [
+  {k:'hacking',    label:'Hacking & Demolition',  hint:'Remove walls, tiles, old fixtures — typically $800–$5,000'},
+  {k:'tiling',     label:'Masonry & Tiling',       hint:'Floor and wall tiles — typically $2,000–$12,000'},
+  {k:'carpentry',  label:'Carpentry & Built-ins',  hint:'Wardrobes, kitchen cabinets, TV console — typically $6,000–$25,000'},
+  {k:'painting',   label:'Painting',               hint:'Walls and ceiling — typically $800–$4,000'},
+  {k:'electrical', label:'Electrical Work',        hint:'Rewiring, extra power points, lighting — typically $1,000–$5,000'},
+  {k:'plumbing',   label:'Plumbing',               hint:'Bathroom fixtures, water heater, pipes — typically $1,200–$5,000'},
+  {k:'kitchen',    label:'Kitchen',                hint:'Countertop, sink, hood, hob (if not under carpentry) — typically $2,000–$12,000'},
+  {k:'flooring',   label:'Flooring',               hint:'Vinyl plank, laminate, or timber — typically $1,500–$10,000'},
+  {k:'aircon',     label:'Air Conditioning',       hint:'Supply and installation — typically $1,500–$6,000'},
+  {k:'misc',       label:'Miscellaneous',          hint:'Curtains, blinds, appliances, furniture, touch-ups'}
+];
+
+function renderRenoBD(){
+  $('reno-grid').innerHTML=RENO_CATS.map(c=>`
+    <div class="form-group">
+      <label class="field-label" style="font-size:.82em">${c.label}</label>
+      <input type="number" id="reno-${c.k}" value="0" min="0" oninput="updateReno()" style="font-size:.88em">
+      <p class="helper" style="font-size:.74em">${c.hint}</p>
+    </div>`).join('');
+}
+
+function updateReno(){
+  let total=0;
+  RENO_CATS.forEach(c=>{total+=(parseFloat($('reno-'+c.k).value)||0);});
+  $('fp-reno').value=total;
+  $('reno-total').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:8px;border:1.5px solid #bfdbfe;margin-top:4px">
+      <span style="font-size:.88em;font-weight:700;color:#0f2d52">Estimated Total</span>
+      <span style="font-size:1.1em;font-weight:800;color:#1d4ed8">${fmt(total)}</span>
+    </div>`;
+  calc(); // updates Cost Breakdown tab + Financial Readiness Plan
+}
+
+function initRenoPreset(ftype){
+  const p=RENO_PRESETS[ftype]||RENO_PRESETS['4rm'];
+  RENO_CATS.forEach(c=>{
+    const el=$('reno-'+c.k);
+    if(el) el.value=p[c.k]||0;
+  });
+  // sync fp-reno and display without triggering an extra calc() — caller does it
+  let total=0;
+  RENO_CATS.forEach(c=>{total+=(parseFloat($('reno-'+c.k).value)||0);});
+  $('fp-reno').value=total;
+  $('reno-total').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:8px;border:1.5px solid #bfdbfe;margin-top:4px">
+      <span style="font-size:.88em;font-weight:700;color:#0f2d52">Estimated Total</span>
+      <span style="font-size:1.1em;font-weight:800;color:#1d4ed8">${fmt(total)}</span>
+    </div>`;
+}
+
+// ─── FINANCIAL READINESS PLAN ─────────────────────────────────────
+
+function fv(pv, pmtAmt, r, n){
+  if(n<=0) return pv;
+  if(r===0) return pv+pmtAmt*n;
+  return pv*Math.pow(1+r,n)+pmtAmt*(Math.pow(1+r,n)-1)/r;
+}
+
+function reqPMT(goal, pv, r, n){
+  if(n<=0) return Math.max(0,goal-pv);
+  if(r===0) return Math.max(0,(goal-pv)/n);
+  const fvPV=pv*Math.pow(1+r,n);
+  if(fvPV>=goal) return 0;
+  return (goal-fvPV)*r/(Math.pow(1+r,n)-1);
+}
+
+function planCalc(opts){
+  // Store opts from calc() so FP inputs can retrigger without args
+  if(opts!==undefined) _planOpts=opts;
+  if(!_planOpts) return;
+  const {optFee,dpViaCash,sdAmt,lgFee,surveyFee,reno0,monthly,loan,isDIA,
+         ownerIncome,dpAtKeys,emp1,emp2,inc1,inc2,hasCoapp,isEO,isCTU,
+         isResale,cov,monthsToApply:overrideMonths}=_planOpts;
+
+  const monthlySave=N('fp-bto-save'); // BTO-specific allocation only
+  const totalSave=N('fp-total-save'); // full household monthly savings (for context)
+  const annualRate=N('fp-rate');
+  const monthsToApply=Math.max(1,I('fp-months')||12);
+  const renoBudget=N('fp-reno');
+  const monthlyExp=N('fp-exp');
+  const emFundMonths=Math.max(1,I('fp-emfund')||6);
+  const age=I('age');
+  const coage=I('coage');
+  const r=annualRate/100/12;
+  const currentSavings=N('cash');
+
+  // Resale: OTP granted → exercise (3 wks) → submit → complete (~10 wks) ≈ 3 months total
+  // BTO:    apply → ballot → booking → AoL (~9 months) → construction (48 months) → keys
+  const t_aol=isResale?monthsToApply:(monthsToApply+9);
+  const t_keys=isResale?(t_aol+1):(t_aol+48); // resale: keys ~1 month after OTP exercise
+
+  const goal1=optFee+dpViaCash+sdAmt+lgFee+(cov||0);
+  const emFund=monthlyExp*emFundMonths;
+  const goal2=renoBudget+Math.round(surveyFee)+emFund+(dpAtKeys||0);
+
+  const savAtAol=fv(currentSavings,monthlySave,r,t_aol);
+  const carryover=Math.max(0,savAtAol-goal1);
+  const savAtKeys=fv(carryover,monthlySave,r,48);
+  const reqSave1=reqPMT(goal1,currentSavings,r,t_aol);
+  const reqSave2=reqPMT(goal2,carryover,r,48);
+
+  // CPF OA monthly: salaried = combined employer+employee OA allocation (~23% of wages up to $6K)
+  // Self-employed = $0 mandatory OA (only MediSave required by law)
+  const cpfRate=a=>a<35?0.23:a<45?0.21:a<50?0.19:0.15;
+  const cpfOA1=emp1==='salaried'?Math.min(inc1,6000)*cpfRate(age):0;
+  const cpfOA2=(!isEO&&hasCoapp&&emp2==='salaried')?Math.min(inc2,6000)*cpfRate(coage):0;
+  const cpfOAMonthly=cpfOA1+cpfOA2;
+
+  // Take-home: gross minus 20% employee CPF (salaried only; self-emp keeps full income)
+  const empCPF1=emp1==='salaried'?Math.min(inc1,6000)*0.20:0;
+  const empCPF2=(!isEO&&hasCoapp&&emp2==='salaried')?Math.min(inc2,6000)*0.20:0;
+  const takeHome1=inc1-empCPF1;
+  const takeHome2=(hasCoapp&&!isEO)?(inc2-empCPF2):0;
+  const takeHome=takeHome1+takeHome2;
+
+  const mortgageCashCost=Math.max(0,monthly-cpfOAMonthly);
+  const netSurplus=takeHome-mortgageCashCost-monthlyExp;
+
+  const d={
+    goal1,goal2,emFund,surveyFee,renoBudget,dpAtKeys,
+    savAtAol,savAtKeys,carryover,
+    reqSave1,reqSave2,
+    t_aol,t_keys,
+    monthly,cpfOAMonthly,cpfOA1,cpfOA2,mortgageCashCost,
+    currentSavings,monthlySave,totalSave,r,annualRate,
+    inc1,inc2,empCPF1,empCPF2,takeHome,takeHome1,takeHome2,
+    netSurplus,monthlyExp,
+    loan,isDIA,optFee,dpViaCash,sdAmt,lgFee,
+    emp1,emp2,hasCoapp,isEO,isCTU,isResale,cov:cov||0
+  };
+
+  renderMilestones(d);
+  renderFPChart(d);
+  renderBudget(d);
+  renderActions(d);
+}
+
+function renderMilestones(d){
+  const status1=d.savAtAol>=d.goal1?'on-track':'behind';
+  const status2=d.savAtKeys>=d.goal2?'on-track':'behind';
+  const pct1=d.goal1>0?Math.min(100,d.savAtAol/d.goal1*100):100;
+  const pct2=d.goal2>0?Math.min(100,d.savAtKeys/d.goal2*100):100;
+  const col1=status1==='on-track'?'green':'amber';
+  const col2=status2==='on-track'?'green':'amber';
+  const tAolYrs=(d.t_aol/12).toFixed(1);
+  const tKeysYrs=(d.t_keys/12).toFixed(1);
+
+  function msCard(title,when,goal,projected,pctW,col,reqSave,status){
+    const shortfall=Math.max(0,goal-projected);
+    const surplus=Math.max(0,projected-goal);
+    return `<div class="ms-card ${status}">
+      <div class="ms-title">${title}</div>
+      <div class="ms-row"><span class="ms-key">Timeline</span><span class="ms-val">${when}</span></div>
+      <div class="ms-row"><span class="ms-key">Cash Goal</span><span class="ms-val">${fmt(goal)}</span></div>
+      <div class="ms-row"><span class="ms-key">Projected</span><span class="ms-val" style="color:${status==='on-track'?'#10b981':'#d97706'}">${fmt(projected)}</span></div>
+      ${shortfall>0?`<div class="ms-row"><span class="ms-key">Shortfall</span><span class="ms-val" style="color:#ef4444">${fmt(shortfall)}</span></div>`:''}
+      ${surplus>0?`<div class="ms-row"><span class="ms-key">Surplus</span><span class="ms-val" style="color:#10b981">${fmt(surplus)}</span></div>`:''}
+      <div class="pbar-wrap" style="margin-top:8px">
+        <div class="pbar-labels"><span style="font-size:.75em">Progress</span><span style="font-size:.75em;font-weight:700">${pctW.toFixed(0)}%</span></div>
+        <div class="pbar"><div class="pbar-fill ${col}" style="width:${pctW}%"></div></div>
+      </div>
+      ${status==='behind'&&reqSave>0?`<div class="alert warn" style="margin-top:8px;font-size:.78em">Need <strong>${fmt(reqSave)}/month</strong> to reach this goal on time.</div>`:''}
+      ${status==='on-track'?`<div class="alert ok" style="margin-top:8px;font-size:.78em">On track ✓</div>`:''}
+    </div>`;
+  }
+
+  $('fp-milestones').innerHTML=`
+    <h3 style="font-size:.93em;font-weight:700;color:#0f2d52;margin-bottom:12px">Savings Milestones</h3>
+    <div class="ms-grid">
+      ${msCard(d.isResale?'Milestone 1 — OTP Exercise & Completion':'Milestone 1 — Agreement for Lease',`~${tAolYrs} yrs from now`,d.goal1,d.savAtAol,pct1,col1,d.reqSave1,status1)}
+      ${msCard(d.isResale?'Milestone 2 — Renovation & Move-in':'Milestone 2 — Key Collection',`~${tKeysYrs} yrs from now`,d.goal2,d.savAtKeys,pct2,col2,d.reqSave2,status2)}
+    </div>
+    <div class="alert info" style="font-size:.8em;margin-top:0">
+      <strong>M1 includes:</strong> Option fee ${fmt(d.optFee)} + Cash downpayment ${fmt(d.dpViaCash)} + BSD ${fmt(Math.round(d.sdAmt))} + Legal ${fmt(Math.round(d.lgFee))}${(d.isResale&&d.cov>0)?` + COV ${fmt(d.cov)}`:''} = <strong>${fmt(d.goal1)}</strong><br>
+      <strong>M2 includes:</strong> Renovation ${fmt(d.renoBudget)} + Survey ${fmt(Math.round(d.surveyFee))} + Emergency fund ${fmt(Math.round(d.emFund))}${d.dpAtKeys>0?` + Balance downpayment ${fmt(Math.round(d.dpAtKeys))}`:''}  = <strong>${fmt(d.goal2)}</strong>
+    </div>`;
+}
+
+function renderFPChart(d){
+  const W=600,H=260,PL=72,PR=20,PT=24,PB=36;
+  const cW=W-PL-PR,cH=H-PT-PB;
+  const totalMonths=d.t_keys+12;
+  const rawMax=Math.max(d.savAtAol,d.goal1+d.goal2,d.savAtKeys);
+  const maxY=(rawMax>0?rawMax:1)*1.15;
+
+  function toX(m){return PL+cW*(m/totalMonths);}
+  function toY(v){return PT+cH*(1-Math.min(Math.max(v,0),maxY)/maxY);}
+
+  // Build curve: Phase 1 (0→AoL), kink down, Phase 2 (AoL→end)
+  const pts=[];
+  for(let m=0;m<=d.t_aol;m++) pts.push(`${toX(m).toFixed(1)},${toY(fv(d.currentSavings,d.monthlySave,d.r,m)).toFixed(1)}`);
+  pts.push(`${toX(d.t_aol).toFixed(1)},${toY(d.carryover).toFixed(1)}`);
+  for(let m=1;m<=totalMonths-d.t_aol;m++) pts.push(`${toX(d.t_aol+m).toFixed(1)},${toY(fv(d.carryover,d.monthlySave,d.r,m)).toFixed(1)}`);
+
+  const xAol=toX(d.t_aol),xKeys=toX(d.t_keys);
+  const yG1=toY(d.goal1),yG12=toY(d.goal1+d.goal2);
+
+  const yTicks=[0,.25,.5,.75,1].map(f=>({y:toY(maxY*f),label:'$'+(maxY*f>=1000?(maxY*f/1000).toFixed(0)+'K':(maxY*f).toFixed(0))}));
+  const maxYrs=Math.ceil(totalMonths/12);
+  const xTicks=[];
+  for(let y=0;y<=maxYrs;y++) if(y*12<=totalMonths) xTicks.push({x:toX(y*12),label:y===0?'Now':`${y}yr`});
+
+  $('fp-chart').innerHTML=`
+    <h3 style="font-size:.93em;font-weight:700;color:#0f2d52;margin-bottom:8px">Savings Trajectory</h3>
+    <div style="overflow-x:auto">
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-width:100%;font-family:inherit;display:block">
+      ${yTicks.map(t=>`<line x1="${PL}" y1="${t.y.toFixed(1)}" x2="${W-PR}" y2="${t.y.toFixed(1)}" stroke="#f1f5f9" stroke-width="1"/><text x="${PL-5}" y="${(t.y+4).toFixed(1)}" font-size="9" fill="#9ca3af" text-anchor="end">${t.label}</text>`).join('')}
+      <line x1="${PL}" y1="${yG1.toFixed(1)}" x2="${W-PR}" y2="${yG1.toFixed(1)}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="${W-PR-4}" y="${(yG1-4).toFixed(1)}" font-size="8.5" fill="#b45309" text-anchor="end">Goal 1</text>
+      <line x1="${PL}" y1="${yG12.toFixed(1)}" x2="${W-PR}" y2="${yG12.toFixed(1)}" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="${W-PR-4}" y="${(yG12-4).toFixed(1)}" font-size="8.5" fill="#1d4ed8" text-anchor="end">Goal 1+2</text>
+      <line x1="${xAol.toFixed(1)}" y1="${PT}" x2="${xAol.toFixed(1)}" y2="${PT+cH}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="${xAol.toFixed(1)}" y="${H-2}" font-size="8.5" fill="#059669" text-anchor="middle">${d.isResale?'OTP':'AoL'}</text>
+      <line x1="${xKeys.toFixed(1)}" y1="${PT}" x2="${xKeys.toFixed(1)}" y2="${PT+cH}" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="${xKeys.toFixed(1)}" y="${H-2}" font-size="8.5" fill="#7c3aed" text-anchor="middle">Keys</text>
+      <polyline points="${pts.join(' ')}" fill="none" stroke="#1d4ed8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${xTicks.map(t=>`<text x="${t.x.toFixed(1)}" y="${H-2}" font-size="8.5" fill="#9ca3af" text-anchor="middle">${t.label}</text>`).join('')}
+      <line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT+cH}" stroke="#d1d5db" stroke-width="1"/>
+      <line x1="${PL}" y1="${PT+cH}" x2="${W-PR}" y2="${PT+cH}" stroke="#d1d5db" stroke-width="1"/>
+      <line x1="${PL+10}" y1="${PT+10}" x2="${PL+28}" y2="${PT+10}" stroke="#1d4ed8" stroke-width="2.5"/>
+      <text x="${PL+33}" y="${PT+14}" font-size="8.5" fill="#374151">Projected savings</text>
+      <line x1="${PL+160}" y1="${PT+10}" x2="${PL+178}" y2="${PT+10}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="${PL+183}" y="${PT+14}" font-size="8.5" fill="#374151">AoL goal</text>
+      <line x1="${PL+248}" y1="${PT+10}" x2="${PL+266}" y2="${PT+10}" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="${PL+271}" y="${PT+14}" font-size="8.5" fill="#374151">Keys goal</text>
+    </svg>
+    </div>
+    <p class="helper" style="margin-top:4px">Drop at AoL = funds withdrawn for downpayment &amp; fees. Return rate: ${d.annualRate}% p.a. compounded monthly. No mortgage payments during construction — they begin at key collection.</p>`;
+}
+
+function renderBudget(d){
+  if(d.loan==='cash'){
+    $('fp-budget').innerHTML=`<div class="alert info" style="font-size:.83em">Full cash purchase — no monthly mortgage obligations after purchase.</div>`;
+    return;
+  }
+  const surplusCol=d.netSurplus>=0?'#10b981':'#ef4444';
+  const pctCovered=d.monthly>0?Math.min(100,d.cpfOAMonthly/d.monthly*100).toFixed(0):'100';
+  const lbl1=d.isEO?'Owner':'Main Applicant';
+  const empTag=e=>e==='self_emp'?'Self-Employed — no employer CPF':e==='student'?'Student / NSman':'Salaried';
+
+  let incRows=`
+    <tr><td><strong>${lbl1}</strong> <span class="bsub">(${empTag(d.emp1)})</span></td><td style="text-align:right"><strong>${fmt(d.inc1)}</strong></td></tr>`;
+  if(d.emp1==='salaried'){
+    incRows+=`<tr><td><span class="bsub">↳ Employee CPF deducted (20%)</span></td><td style="text-align:right;color:#ef4444">−${fmt(d.empCPF1)}</td></tr>
+    <tr><td><span class="bsub">↳ Employer CPF to OA (~${(d.cpfOA1>0?(d.cpfOA1-Math.min(d.inc1,6000)*0.20):0)>=0?'':''}13%)</span></td><td style="text-align:right;color:#10b981">+${fmt(d.cpfOA1)} OA/mo</td></tr>`;
+  } else {
+    incRows+=`<tr><td><span class="bsub">↳ No employer CPF — full cash income, zero OA top-up</span></td><td style="text-align:right;color:#9ca3af">$0 OA/mo</td></tr>`;
+  }
+  if(d.hasCoapp&&!d.isEO){
+    const lbl2='Co-applicant';
+    incRows+=`<tr style="border-top:1px solid #f1f5f9"><td><strong>${lbl2}</strong> <span class="bsub">(${empTag(d.emp2)})</span></td><td style="text-align:right"><strong>${fmt(d.inc2)}</strong></td></tr>`;
+    if(d.emp2==='salaried'){
+      incRows+=`<tr><td><span class="bsub">↳ Employee CPF deducted (20%)</span></td><td style="text-align:right;color:#ef4444">−${fmt(d.empCPF2)}</td></tr>
+      <tr><td><span class="bsub">↳ Employer CPF to OA (~13%)</span></td><td style="text-align:right;color:#10b981">+${fmt(d.cpfOA2)} OA/mo</td></tr>`;
+    } else {
+      incRows+=`<tr><td><span class="bsub">↳ No employer CPF — zero OA top-up</span></td><td style="text-align:right;color:#9ca3af">$0 OA/mo</td></tr>`;
+    }
+  }
+
+  $('fp-budget').innerHTML=`
+    <h3 style="font-size:.93em;font-weight:700;color:#0f2d52;margin-bottom:10px">Post-Purchase Monthly Cash Flow</h3>
+    <div class="alert info" style="font-size:.8em;margin-bottom:12px">Estimated budget <em>after key collection</em>. Salaried workers get employer CPF (~17%) that goes to OA and offsets mortgage costs. Self-employed workers pay the full mortgage cash cost unless they voluntarily top up CPF OA.</div>
+    <table class="budget-tbl">
+      <tbody>
+        ${incRows}
+        <tr style="border-top:1.5px solid #e5e7eb"><td style="padding-top:8px"><strong>Combined Take-Home Cash</strong></td><td style="text-align:right;padding-top:8px"><strong>${fmt(d.takeHome)}</strong></td></tr>
+        <tr><td style="padding-top:10px"><span class="bsub">Total CPF OA inflow (offsets mortgage)</span></td><td style="text-align:right;padding-top:10px;color:#10b981">+${fmt(d.cpfOAMonthly)}</td></tr>
+        <tr><td><span class="bsub">Monthly mortgage instalment (total)</span></td><td style="text-align:right;color:#6b7280">−${fmt(d.monthly)}</td></tr>
+        <tr><td><span class="bsub">Cash top-up required (~${100-parseInt(pctCovered)}% of mortgage)</span></td><td style="text-align:right;color:#ef4444">−${fmt(d.mortgageCashCost)}</td></tr>
+        <tr><td>Monthly Living Expenses</td><td style="text-align:right;color:#ef4444">−${fmt(d.monthlyExp)}</td></tr>
+        <tr style="border-top:1.5px solid #e5e7eb"><td style="padding-top:8px"><strong>Net Monthly Surplus</strong></td><td style="text-align:right;font-weight:700;color:${surplusCol};padding-top:8px">${d.netSurplus>=0?'+':''}${fmt(d.netSurplus)}</td></tr>
+      </tbody>
+    </table>
+    <p class="helper" style="margin-top:6px">CPF OA rates: age &lt;35 = 23%, 35–44 = 21%, 45–49 = 19%, 50+ = 15% of ordinary wages (up to $6,000/month cap). Self-employed individuals can voluntarily top up CPF OA to reduce their mortgage cash burden.</p>`;
+}
+
+function renderActions(d){
+  const items=[];
+  const behind1=d.savAtAol<d.goal1;
+  const behind2=d.savAtKeys<d.goal2;
+
+  const slack=Math.max(0,(d.totalSave||0)-d.monthlySave); // non-BTO savings that could be redirected
+
+  if(!behind1&&!behind2){
+    items.push(`<strong>You are on track for both milestones</strong> with ${fmt(d.monthlySave)}/month going to BTO. ${slack>0?`You have an additional ${fmt(slack)}/month for other goals — keep this flexible as a buffer.`:''}`);
+  } else if(behind1&&behind2){
+    items.push(`You are behind on both milestones. Priority: hit the AoL goal first — you need <strong>${fmt(d.reqSave1)}/month</strong> toward BTO (currently ${fmt(d.monthlySave)}/month, a gap of ${fmt(d.reqSave1-d.monthlySave)}/month).`);
+    if(slack>0&&d.reqSave1>d.monthlySave){
+      const canClose=Math.min(slack,d.reqSave1-d.monthlySave);
+      items.push(`You have ${fmt(slack)}/month in non-BTO savings. Redirecting ${fmt(canClose)}/month of that${canClose<d.reqSave1-d.monthlySave?' (partial)':''} toward BTO would ${canClose>=d.reqSave1-d.monthlySave?'close the gap entirely':'reduce the shortfall significantly'}.`);
+    }
+    items.push(`During the 4-year construction period, aim for <strong>${fmt(d.reqSave2)}/month</strong> toward BTO to cover renovation, fees, and your emergency fund.`);
+  } else if(behind1){
+    items.push(`AoL milestone needs more BTO savings — increase to <strong>${fmt(d.reqSave1)}/month</strong> (${fmt(d.reqSave1-d.monthlySave)}/month more than your current ${fmt(d.monthlySave)}/month BTO allocation).`);
+    if(slack>0) items.push(`You have ${fmt(slack)}/month in non-BTO savings that could cover this gap if redirected.`);
+  } else {
+    items.push(`AoL costs are covered at ${fmt(d.monthlySave)}/month. During construction, aim for <strong>${fmt(d.reqSave2)}/month</strong> toward BTO to fund renovation, fees, and your emergency fund.`);
+    if(slack>0&&d.reqSave2>d.monthlySave) items.push(`You have ${fmt(slack)}/month in non-BTO savings — redirecting some of it toward BTO during construction would help meet Milestone 2.`);
+  }
+
+  if(d.annualRate<2.5){
+    items.push(`Your assumed return rate (${d.annualRate}%) is below the CPF OA floor (2.5%). Consider: CPF OA top-ups, Singapore Savings Bonds (~3%), or T-bills (~3.5%) rather than low-interest savings accounts.`);
+  } else if(d.annualRate>8){
+    items.push(`A return rate of ${d.annualRate}% is optimistic for planning purposes. Run a parallel conservative scenario at 3–4% to stress-test your savings timeline.`);
+  }
+
+  if(d.isDIA){
+    items.push(`<strong>DIA advantage:</strong> Your AoL downpayment is only 2.5% of the flat price — significantly reducing Milestone 1 pressure. Income and EHG are assessed closer to key collection, giving your savings more time to grow.`);
+  }
+
+  // Self-employed CPF gap warning
+  const hasSelf=d.emp1==='self_emp'||(d.hasCoapp&&!d.isEO&&d.emp2==='self_emp');
+  if(hasSelf&&d.loan!=='cash'){
+    const whoSelf=d.emp1==='self_emp'&&d.emp2==='self_emp'?'Both applicants are':d.emp1==='self_emp'?'The main applicant is':'The co-applicant is';
+    items.push(`<strong>Self-employed CPF gap:</strong> ${whoSelf} self-employed and receives no employer CPF. A larger share of the monthly mortgage (${fmt(d.mortgageCashCost)}/month cash top-up) must be paid in cash. Consider voluntary CPF OA top-ups (up to $37,740/year) to reduce this cash burden and earn 2.5–3.5% risk-free.`);
+  }
+
+  if(d.loan!=='cash'){
+    if(d.netSurplus<0){
+      items.push(`<strong>Post-purchase cash deficit of ${fmt(-d.netSurplus)}/month.</strong> Consider: lower flat price, longer loan tenure, reducing expenses, or ensuring salary growth before key collection.`);
+    } else if(d.netSurplus<500){
+      items.push(`Monthly surplus after mortgage and expenses is thin (${fmt(d.netSurplus)}). Prioritise building your ${fmt(d.emFund)} emergency fund <em>before</em> key collection.`);
+    }
+  }
+
+  if(d.isCTU){
+    items.push(`<strong>Citizen Top-Up reminder:</strong> When the SPR partner obtains Singapore Citizenship (or an SC child is born), apply to HDB within <strong>6 months</strong>. The <strong>$10,000</strong> is credited to CPF OA and reduces your outstanding loan — do not miss the window.`);
+  }
+
+  items.push(`Review this plan every 6 months as income, savings rate, and BTO timeline may change. Verify EHG eligibility and loan quantum via an HDB HFE letter before committing.`);
+
+  $('fp-actions').innerHTML=`
+    <h3 style="font-size:.93em;font-weight:700;color:#0f2d52;margin-bottom:10px">Recommendations</h3>
+    <ul class="actions-list">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+updatePriceRef();
+renderRenoBD();
+initRenoPreset($('ftype').value);
+calc();
+</script>
+</body>
+</html>
